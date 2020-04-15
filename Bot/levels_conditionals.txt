@@ -1,5 +1,5 @@
 Needs Pl. OpenCitizens:
-0 level = 0 // when joined or when Pl. Moderators role and pl. Administrators role has been removed
+0 level = 0 // when user joined server or when Pl. Moderators role and pl. Administrators role has been removed
 1 level = 55 = New OpenCitizens
 2 level = 195 = Very Tiny OpenCitizens
 3 level = 255 = Tiny OpenCitizens
@@ -13,7 +13,7 @@ Needs Pl. OpenCitizens:
 
 
 Needs Pl. Moderators:
-0 level = 0 when user joined mod group or when Pl. OpenCitizens role and pl. Administrators role has been removed
+0 level = 0 // when user joined mod group or when Pl. OpenCitizens role and pl. Administrators role has been removed
 1 level = 55 = New Moderators
 2 level = 195 = Very Tiny Moderators
 3 level = 255 = Tiny Moderators
@@ -27,7 +27,7 @@ Needs Pl. Moderators:
 
 
 Needs Pl. Administrators:
-0 level = 0 when user joined admin group or when Pl. OpenCitizens role and pl. Moderators role has been removed
+0 level = 0 // when user joined admin group or when Pl. OpenCitizens role and pl. Moderators role has been removed
 1 level = 55 = New Administrators
 2 level = 195 = Very Tiny Administrators
 3 level = 255 = Tiny Administrators
@@ -38,3 +38,7 @@ Needs Pl. Administrators:
 8 level = 2565 = Very Huge Administrators
 9 level = 3655 = Old Administrators
 10 level = 9665 = Fl. Administrators
+
+
+When at level 0 in any case the Pl. role will be placed.
+Thank you.

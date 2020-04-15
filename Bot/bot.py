@@ -20,7 +20,7 @@ welcome_message = 'Hello, welcome to the {} Discord-server! \n \n I can answer m
 To ask me just type in the number in front of the question!'
 
 response_dict = {1: 'This is the support discord for the OpenCity city building game.', 2: 'Sairam', 3: 'Please check the faq', 4: 'We have made Main Menu and some icons',
-                 5: 'NameKhan72 & Sairam'}
+                 5: 'NameKhan72, Sairam, Wizard BINAY'}
 
 
 @client.event
