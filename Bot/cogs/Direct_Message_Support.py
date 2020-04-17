@@ -26,12 +26,14 @@ class Direct_Message_Support(commands.Cog):
 			4: 'We have made Main Menu and some icons',
 			5: 'NameKhan72, Sairam, Wizard BINAY',
 			6: 'The game OpenCity is the city simulation and transport simulation with first person view of your city and drivable road vehicles, trains, ships and aircrafts.',
-			7: 'We are not able to answer, but we can spectate.\n \
-					OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu\n \
-					CPU: Core i5 or greater\n \
-			        RAM: 4GB or Above\n \
-					GPU: 2GB or Above\n \
-					Storage: 12GB\n'
+			7: 'We are not able to answer, but we can spectate.\
+```\
+OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu\n\
+CPU: Core i5 or greater\n\
+RAM: 4GB or Above\n\
+GPU: 2GB or Above\n\
+Storage: 12GB\
+```'
 
 		}
 
