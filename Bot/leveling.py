@@ -1,9 +1,13 @@
 import discord
 import random
 import json
+import dotenv
+import os
 from Bot.color_builder import color_dict2discord_color_list
 
-TOKEN = 'NjkzNDAxNjcxODM2ODkzMjM1.Xpb63Q.fyUesqYViFssI6VaT1S2814Zb0w'
+dotenv.load_dotenv()
+
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = discord.Client()
 
