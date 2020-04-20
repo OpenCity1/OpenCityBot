@@ -11,7 +11,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
 
-bot = commands.Bot(command_prefix='.')
+bot = commands.Bot(command_prefix='!')
 
 
 roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
@@ -73,29 +73,29 @@ async def on_ready():
 # 	# await leveling.level_update(before, after)
 # 	pass
 
-
-@bot.command(help='Pings the bot and gives latency')
-async def ping(ctx: discord.ext.commands.context.Context):
-	await ctx.send(f'Pong! {round(bot.latency * 1000)}ms Latency')
-
-
-@bot.command()
-async def load(ctx, extension):
-	bot.load_extension(f'cogs.{extension}')
-	await ctx.send(f"Loaded {extension}")
-
-
-@bot.command()
-async def unload(ctx, extension):
-	bot.unload_extension(f'cogs.{extension}')
-	await ctx.send(f"Unloaded {extension}")
-
-
-@bot.command()
-async def reload(ctx, extension):
-	bot.unload_extension(f'cogs.{extension}')
-	bot.load_extension(f'cogs.{extension}')
-	await ctx.send(f"Reloaded {extension}")
+#
+# @bot.command(help='Pings the bot and gives latency')
+# async def ping(ctx: discord.ext.commands.context.Context):
+# 	await ctx.send(f'Pong! {round(bot.latency * 1000)}ms Latency')
+#
+#
+# @bot.command()
+# async def load(ctx, extension):
+# 	bot.load_extension(f'cogs.{extension}')
+# 	await ctx.send(f"Loaded {extension}")
+#
+#
+# @bot.command()
+# async def unload(ctx, extension):
+# 	bot.unload_extension(f'cogs.{extension}')
+# 	await ctx.send(f"Unloaded {extension}")
+#
+#
+# @bot.command()
+# async def reload(ctx, extension):
+# 	bot.unload_extension(f'cogs.{extension}')
+# 	bot.load_extension(f'cogs.{extension}')
+# 	await ctx.send(f"Reloaded {extension}")
 
 
 for filename in os.listdir('./cogs'):
