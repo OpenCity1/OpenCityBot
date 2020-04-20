@@ -17,6 +17,10 @@ class Direct_Message_Support(commands.Cog):
 							5: Who made this bot?\n \
 							6: What is this game?\n \
 							7: What will be the specifications?\n \
+							8: What is premium subscription?\n \
+							9: What is Special Sandbox subscription?\n \
+							10: What is the use of diamonds?\n \
+							11: Do you have any price map for subscriptions?\n \
 							To ask me just type in the number in front of the question!'
 		)
 		self.response_dict = {
@@ -33,7 +37,11 @@ CPU: Core i5 or greater\n\
 RAM: 4GB or Above\n\
 GPU: 2GB or Above\n\
 Storage: 12GB\
-```'
+```',
+			8: 'Premium is a subscription of OpenCity, it contains assets and features which are very difficult for developers to make.',
+			9: 'Special Sandbox is also a subscription, which is a superset of built-in sandbox, it is named as "Everything Unlimited", as it makes all the currencies unlimited.',
+			10: 'Diamonds are used to get parts of premium subscription.',
+			11: 'We don\'t have any price map for the subscriptions.'
 
 		}
 
