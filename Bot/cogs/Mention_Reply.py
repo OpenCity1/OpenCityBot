@@ -11,7 +11,7 @@ class Mention_Reply(commands.Cog):
 	async def on_message(self, message: discord.Message):
 		for mention in message.mentions:
 			if mention == message.guild.me:
-				await message.channel.send("Yes?")
+				await message.channel.send("I am OpenCityBot. My prefix is `!`. ")
 
 
 def setup(client):
