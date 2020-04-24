@@ -1,9 +1,10 @@
 __author__ = "Sairam"
 
-import discord
-from discord.ext import commands
 import random
 from typing import Optional
+
+import discord
+from discord.ext import commands
 
 
 class Fun(commands.Cog):
@@ -78,8 +79,6 @@ class Fun(commands.Cog):
 		await ctx.send(
 			f"Answer: {random.choice(messages.split(' '))}"
 		)
-
-
 
 
 def setup(bot):

@@ -1,11 +1,16 @@
-import os
+# import Bot.leveling as leveling
 import logging
+import os
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# import Bot.leveling as leveling
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -13,13 +18,13 @@ GUILD_ID = int(os.getenv('DISCORD_GUILD_ID'))
 
 bot = commands.Bot(command_prefix='!')
 
-
 roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
 
 
 @bot.event
 async def on_ready():
-	# guild = discord.utils.get(client.guilds, id=GUILD_ID)
+	await bot.change_presence(activity=discord.Game(name="OpenCity \nType !help to get started"))
+	# guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
 	for guild_index, guild in enumerate(bot.guilds):
 		print(
 			f'{bot.user} is connected to the following guild:\n'
