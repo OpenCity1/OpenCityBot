@@ -12,17 +12,17 @@ from Bot.numbers import make_ordinal
 
 
 class Leveling(commands.Cog):
-	def __init__(self, client):
-		self.client = client
+	def __init__(self, bot):
+		self.bot = bot
 		self.xps_level = [0, 55, 195, 255, 365, 655, 965, 1225, 2565, 3655, 9665]
 
 		self.leveling_prefix = ['Pl. ', 'New ', 'Very Tiny ', 'Tiny ', 'Small ', '', 'Big ', 'Huge ', 'Very Huge ', 'Old ', 'Fl. ']
 		self.leveling_roles = {'admin': ['Administrators', []], 'mod': ['Moderators', []], 'citizen': ['OpenCitizens', []]}
 
 		self.color_dict = {
-			"red": ["#DC143C", "#8B0000"],
-			"yellow": ["#FFFF99", "#666600"],
-			"green": ["#90EE90", "#006400"]
+			"red": ["#FF5757", "#850000"],
+			"yellow": ["#FFFF70", "#757501"],
+			"green": ["#73FF73", "#007800"]
 		}
 		self.file_data = json.load(open(os.path.dirname(__file__) + '/../users.json', "r+"))
 
@@ -65,7 +65,7 @@ class Leveling(commands.Cog):
 			self.file_data[str(message.guild.id)][str(message.author.id)]['xps'] += random.randrange(5, 25, 5)
 			self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"] = int(time.time())
 
-	async def create_roles_and_return_user_category(self, message):
+	async def return_user_category(self, message):
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
 		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
 		user_category = None
@@ -92,7 +92,7 @@ class Leveling(commands.Cog):
 		if message.channel.type != discord.ChannelType.private:
 			self.get_data(message)
 			if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
-				user_category_1 = await self.create_roles_and_return_user_category(message)
+				user_category_1 = await self.return_user_category(message)
 				self.update_xps(message)
 				self.update_level(message)
 				await self.give_roles_according_to_level(user_category_1, message)
@@ -210,6 +210,7 @@ class Leveling(commands.Cog):
 			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) not in ctx.guild.roles:
 					await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True)
+		await ctx.send("Created All levelling roles")
 
 	@commands.command()
 	async def delete_roles(self, ctx: commands.Context):
@@ -221,7 +222,8 @@ class Leveling(commands.Cog):
 			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True).delete()
+		await ctx.send("Deleted All levelling roles")
 
 
-def setup(client):
-	client.add_cog(Leveling(client))
+def setup(bot):
+	bot.add_cog(Leveling(bot))

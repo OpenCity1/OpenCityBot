@@ -11,7 +11,7 @@ class Fun(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name='99!', help='Gives a random brooklyn 99 quote')
+	@commands.command(name='99!', help='Gives a random brooklyn 99 quote!')
 	async def _99(self, ctx: discord.ext.commands.context.Context):
 		brooklyn_99_quotes = [
 			'I\'m the human form of the 💯 emoji.',
@@ -24,7 +24,7 @@ class Fun(commands.Cog):
 		response = random.choice(brooklyn_99_quotes)
 		await ctx.send(response)
 
-	@commands.command(name='8ball', help='Answers your questions ;)')
+	@commands.command(name='8ball', help='Answers your questions! ;)')
 	async def _8ball(self, ctx: discord.ext.commands.context.Context, *, question):
 		replies = [
 			"As I see it, yes.",
@@ -53,8 +53,8 @@ class Fun(commands.Cog):
 			f'Answer: {random.choice(replies)}'
 		)
 
-	@commands.command(help="Says what you send.")
-	async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None,):
+	@commands.command(help="Says what you send!")
+	async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None, ):
 
 		if channel is None:
 			await ctx.send(message)
@@ -62,7 +62,7 @@ class Fun(commands.Cog):
 			await channel.send(message)
 			await ctx.send("Message sent")
 
-	@commands.command(name='spaceit!', help="Add a space between each letter")
+	@commands.command(name='spaceit!', help="Add a space between each letter!")
 	async def space_it(self, ctx: commands.Context, *, message: str):
 		await ctx.send(" ".join(message))
 
@@ -74,11 +74,15 @@ class Fun(commands.Cog):
 	async def flip_the_coin(self, ctx: commands.Context):
 		await ctx.send(f"You got {random.choice(('Head', 'Tail'))}")
 
-	@commands.command(name='voter!', help='Helps you to decide anything!')
+	@commands.command(name='voter!', help='Helps you to decide anything!', aliases=['vote', 'voteforme'])
 	async def voter(self, ctx: commands.Context, *, messages: str):
 		await ctx.send(
 			f"Answer: {random.choice(messages.split(' '))}"
 		)
+
+	@commands.command()
+	async def wikipedia(self, search):
+		pass
 
 
 def setup(bot):

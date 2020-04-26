@@ -3,8 +3,8 @@ from discord.ext import commands
 
 class Poll(commands.Cog):
 
-	def __init__(self, client):
-		self.client = client
+	def __init__(self, bot):
+		self.bot = bot
 
 	@commands.command()
 	async def polls(self, ctx: commands.Context, *, q_and_a):
@@ -19,5 +19,5 @@ class Poll(commands.Cog):
 			await message.add_reaction(f"{answer_index}\N{variation selector-16}\N{combining enclosing keycap}")
 
 
-def setup(client):
-	client.add_cog(Poll(client))
+def setup(bot):
+	bot.add_cog(Poll(bot))

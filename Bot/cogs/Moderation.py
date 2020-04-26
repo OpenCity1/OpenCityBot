@@ -36,7 +36,6 @@ class Moderation(commands.Cog):
 	@commands.command(help='Unbans the given user')
 	async def unban(self, ctx: discord.ext.commands.context.Context, member: discord.Member, *, reason="No reason provided"):
 		role = discord.utils.get(ctx.guild.roles, name='Banned Members')
-		print(role)
 		await member.remove_roles(role, reason=reason)
 		await ctx.send(f'{member} is unbanned because of {reason}.')
 

@@ -7,8 +7,8 @@ from discord.ext import commands
 
 
 class Direct_Message_Support(commands.Cog):
-	def __init__(self, client):
-		self.client = client
+	def __init__(self, bot):
+		self.bot = bot
 		self.welcome_message = (
 			'Hello, welcome to the {} Discord-server! \n \n I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
 						\n\
@@ -71,7 +71,7 @@ Storage: 12GB\
 
 	# @commands.Cog.listener()
 	# async def on_message(self, message: discord.Message):
-	# 	if message.author == self.client.user:
+	# 	if message.author == self.bot.user:
 	# 		return
 	# 	if message.channel.type == discord.ChannelType.private:
 	# 		if not str(message.content).startswith("!"):
@@ -93,7 +93,7 @@ Storage: 12GB\
 
 		while True:
 			try:
-				response_by_user = await self.client.wait_for('message', check=check, timeout=60)
+				response_by_user = await self.bot.wait_for('message', check=check, timeout=60)
 			except asyncio.TimeoutError:
 				await ctx.send("You took to long to respond")
 				break
@@ -109,5 +109,5 @@ Storage: 12GB\
 						await ctx.send(f"Sorry we just have {len(self.response_dict.keys())} questions as FAQ. More will be added.")
 
 
-def setup(client):
-	client.add_cog(Direct_Message_Support(client))
+def setup(bot):
+	bot.add_cog(Direct_Message_Support(bot))
