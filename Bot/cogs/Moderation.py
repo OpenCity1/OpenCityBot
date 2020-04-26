@@ -36,7 +36,6 @@ class Moderation(commands.Cog):
 	@commands.command(help='Unbans the given user')
 	async def unban(self, ctx: discord.ext.commands.context.Context, member: discord.Member, *, reason="No reason provided"):
 		role = discord.utils.get(ctx.guild.roles, name='Banned Members')
-		print(role)
 		await member.remove_roles(role, reason=reason)
 		await ctx.send(f'{member} is unbanned because of {reason}.')
 
@@ -46,9 +45,13 @@ class Moderation(commands.Cog):
 		await member.remove_roles(role, reason=reason)
 		await ctx.send(f'{member} is unkicked because of {reason}.')
 
-	@commands.command(help="Purges the given amount of messages")
+	@commands.command(help="Purges the given amount of messages", aliases=['clear'])
 	async def purge(self, ctx: discord.ext.commands.context.Context, amount_of_messages=0):
 		await ctx.channel.purge(limit=amount_of_messages)
+
+	@commands.command()
+	async def status(self, ctx: commands.Context, member: discord.Member):
+		await ctx.send(member.activity)
 
 
 def setup(bot):
