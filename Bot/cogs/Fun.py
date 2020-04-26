@@ -1,15 +1,17 @@
 __author__ = "Sairam"
 
+import random
+from typing import Optional
+
 import discord
 from discord.ext import commands
-import random
 
 
 class Fun(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command(name='99!', help='Gives a random brooklyn 99 quote')
+	@commands.command(name='99!', help='Gives a random brooklyn 99 quote!')
 	async def _99(self, ctx: discord.ext.commands.context.Context):
 		brooklyn_99_quotes = [
 			'I\'m the human form of the 💯 emoji.',
@@ -22,7 +24,7 @@ class Fun(commands.Cog):
 		response = random.choice(brooklyn_99_quotes)
 		await ctx.send(response)
 
-	@commands.command(name='8ball', help='Answers your questions ;)')
+	@commands.command(name='8ball', help='Answers your questions! ;)')
 	async def _8ball(self, ctx: discord.ext.commands.context.Context, *, question):
 		replies = [
 			"As I see it, yes.",
@@ -51,13 +53,36 @@ class Fun(commands.Cog):
 			f'Answer: {random.choice(replies)}'
 		)
 
-	@commands.command(help="Says what you send.")
-	async def say(self, ctx: discord.ext.commands.context.Context, message=None, channel: discord.TextChannel = None):
-		await ctx.send("Message sent")
+	@commands.command(help="Says what you send!")
+	async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None, ):
+
 		if channel is None:
 			await ctx.send(message)
 		else:
 			await channel.send(message)
+			await ctx.send("Message sent")
+
+	@commands.command(name='spaceit!', help="Add a space between each letter!")
+	async def space_it(self, ctx: commands.Context, *, message: str):
+		await ctx.send(" ".join(message))
+
+	@commands.command(name='randomizecase', help="Randomizes each letter into capital or small", aliases=['randomcase', 'caserandom'])
+	async def randomize_case(self, ctx: commands.Context, *, message: str):
+		await ctx.send("".join(random.choice((str1.upper(), str1.lower())) for str1 in message))
+
+	@commands.command(name='flipthecoin!', help="Flips the coin!", aliases=['flip', 'coinflip'])
+	async def flip_the_coin(self, ctx: commands.Context):
+		await ctx.send(f"You got {random.choice(('Head', 'Tail'))}")
+
+	@commands.command(name='voter!', help='Helps you to decide anything!', aliases=['vote', 'voteforme'])
+	async def voter(self, ctx: commands.Context, *, messages: str):
+		await ctx.send(
+			f"Answer: {random.choice(messages.split(' '))}"
+		)
+
+	@commands.command()
+	async def wikipedia(self, search):
+		pass
 
 
 def setup(bot):
