@@ -1,4 +1,4 @@
-import os
+from io import BytesIO
 
 import discord
 from discord.ext import commands
@@ -38,12 +38,14 @@ class Ticket(commands.Cog):
 		if ctx.channel.name == f"{str(ctx.author.name).lower()}-{ctx.author.discriminator}" or discord.utils.get(ctx.guild.roles,
 		                                                                                                         name="Support") in ctx.author.roles or ctx.author.id == ctx.guild.owner_id:
 			transcripts = await ctx.channel.history().flatten()
-			with open(os.path.dirname(__file__) + f"/../{ctx.author.name}_{ctx.author.discriminator}_{ctx.channel.id}.txt", "w+") as file1:
+			with BytesIO() as file1:
 				for transcript in transcripts:
-					file1.write(str(transcript) + '\n')
-				await ctx.author.send(file=discord.File(file1))
+					print((str(transcript.content)))
+					file1.write((str(transcript.content).encode()) + '\n'.encode())
+					x = file1.readline(1)
+					print(x)
+				await ctx.author.send(file=discord.File(file1, filename=f"{ctx.author.name}_{ctx.author.discriminator}_{ctx.channel.id}.txt"))
 			await ctx.channel.delete()
-		os.remove(os.path.dirname(__file__) + f"/../{ctx.author.name}_{ctx.author.discriminator}_{ctx.channel.id}.txt")
 
 
 def setup(bot):
