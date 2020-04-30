@@ -224,6 +224,18 @@ class Leveling(commands.Cog):
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True).delete()
 		await ctx.send("Deleted All levelling roles")
 
+	@commands.command()
+	async def delete_all_roles(self, ctx: commands.Context):
+		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
+			await discord.utils.get(ctx.guild.roles, name="Respected People").delete()
+		leveling_prefix_1 = list(reversed(self.leveling_prefix))
+		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
+		for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
+			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
+				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
+					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
+		await ctx.send("Deleted All levelling roles")
+
 
 def setup(bot):
 	bot.add_cog(Leveling(bot))
