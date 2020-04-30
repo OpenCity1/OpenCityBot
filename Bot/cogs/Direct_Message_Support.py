@@ -1,8 +1,10 @@
 __author__ = ["Sairam", "NameKhan72"]
 
 import asyncio
+
 import json
 import os
+
 
 import discord
 from discord.ext import commands
@@ -11,6 +13,7 @@ from discord.ext import commands
 class Direct_Message_Support(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
 		self.guilds_json = json.load(open(os.path.dirname(__file__) + '/../guilds_data.json', "r+"))
 		self.welcome_message = (
 			'Hello, welcome to the {} Discord-server! \n \n I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
@@ -134,6 +137,7 @@ Storage: 12GB\
 					async with ctx.channel.typing():
 						await ctx.send(f"Okay! {ctx.author.mention} I give up! Please don't disturb now!")
 						break
+
 
 
 def setup(bot):
