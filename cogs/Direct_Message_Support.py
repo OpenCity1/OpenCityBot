@@ -29,9 +29,9 @@ class Direct_Message_Support(commands.Cog):
 							To ask me just type in the number in front of the question!'
 		)
 		self.questions = (
-			'I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \n You can ask me if you want: \n \
-			\n \
-			1: What is this? or what is the server meant for ?\n \
+			'I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
+			\n\
+			1: What is this? or what is the server meant for ?\n\
 			2: Who is the administrator? or owner?\n \
 			3: When will OpenCity be released?\n \
 			4: How far are the game has progressed so far?\n \
@@ -66,35 +66,34 @@ Storage: 12GB\
 
 		}
 
-	def get_data(self, guild):
-		with open(os.path.dirname(__file__) + '/../guilds_data.json', "r+") as file:
-			self.guilds_json = json.load(file)
-			if str(guild.id) not in self.guilds_json.keys():
-				self.guilds_json[str(guild.id)] = {"enabled": {
-					"Ban_On_Leave",
-					"Direct_Message_Support",
-					"Fun",
-					"Leveling",
-					"Mention_Reply",
-					"Moderation",
-					"Poll",
-					"System",
-					"Ticket"
-				}}
-				self.guilds_json[str(guild.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
-
-	def set_data(self):
-		with open(os.path.dirname(__file__) + '/../guilds_data.json', "w+") as file:
-			file.write(json.dumps(self.guilds_json, indent=4))
+	# def get_data(self, guild):
+	# 	with open(os.path.dirname(__file__) + '/../guilds_data.json', "r+") as file:
+	# 		self.guilds_json = json.load(file)
+	# 		if str(guild.id) not in self.guilds_json.keys():
+	# 			self.guilds_json[str(guild.id)] = {"enabled": {
+	# 				"Ban_On_Leave",
+	# 				"Direct_Message_Support",
+	# 				"Fun",
+	# 				"Leveling",
+	# 				"Mention_Reply",
+	# 				"Moderation",
+	# 				"Poll",
+	# 				"System",
+	# 				"Ticket"
+	# 			}}
+	# 			self.guilds_json[str(guild.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
+	#
+	# def set_data(self):
+	# 	with open(os.path.dirname(__file__) + '/../guilds_data.json', "w+") as file:
+	# 		file.write(json.dumps(self.guilds_json, indent=4))
 
 	@commands.Cog.listener()
 	async def on_member_join(self, member: discord.Member):
-		guild = member.guild
-		await member.create_dm()
-		await member.dm_channel.send(self.welcome_message.format(guild.name))
+		if not member.bot:
+			await member.send(self.welcome_message.format(member.guild.name))
 
-	async def cog_check(self, ctx):
-		return
+	# async def cog_check(self, ctx):
+	# 	return
 
 	@commands.command()
 	async def support(self, ctx: commands.Context):

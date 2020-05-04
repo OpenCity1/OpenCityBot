@@ -7,13 +7,21 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from Bot.color_builder import color_dict2discord_color_list
-from Bot.numbers import make_ordinal
+from color_builder import color_dict2discord_color_list
+from numbers import make_ordinal
+from permision_builder import permission_builder
+
+
+def is_guild_owner():
+	async def predicate(ctx):
+		return ctx.author == ctx.guild.owner
+
+	return commands.check(predicate)
 
 
 class Leveling(commands.Cog):
 	def __init__(self, bot):
-		self.bot = bot
+		self.bot: commands.Bot = bot
 		self.xps_level = [0, 55, 195, 255, 365, 655, 965, 1225, 2565, 3655, 9665]
 
 		self.leveling_prefix = ['Pl. ', 'New ', 'Very Tiny ', 'Tiny ', 'Small ', '', 'Big ', 'Huge ', 'Very Huge ', 'Old ', 'Fl. ']
@@ -24,17 +32,30 @@ class Leveling(commands.Cog):
 			"yellow": ["#FFFF70", "#757501"],
 			"green": ["#73FF73", "#007800"]
 		}
+		self.perms_list = [[68608, 68608, 1117184, 3214336, 3230720, 3230720, 36785152, 36785152, 36785216, 36785728, 36785728],
+		                   [36785856, 36785856, 36785857, 103894721, 103898817, 103899073, 108093377, 116481985, 250699713, 1324441537, 1324441537],
+		                   [1861312449, 1861312449, 1861320641, 1861451713, 1861713857, 1861746625, 1861746627, 1861746631, 1878523847, 2146959303, 2146959303]
+		                   ]
+
 		self.file_data = json.load(open(os.path.dirname(__file__) + '/../users.json', "r+"))
 
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
-	def get_data(self, message):
-		with open(os.path.dirname(__file__) + '/../users.json', "r+") as file:
-			self.file_data = json.load(file)
-			if str(message.guild.id) not in self.file_data.keys():
-				self.file_data[str(message.guild.id)] = {}
-			if str(message.author.id) not in self.file_data[str(message.guild.id)].keys():
-				self.file_data[str(message.guild.id)][str(message.author.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
+	def get_data(self, message=None, after=None):
+		if message is not None:
+			with open(os.path.dirname(__file__) + '/../users.json', "r+") as file:
+				self.file_data = json.load(file)
+				if str(message.guild.id) not in self.file_data.keys():
+					self.file_data[str(message.guild.id)] = {}
+				if str(message.author.id) not in self.file_data[str(message.guild.id)].keys():
+					self.file_data[str(message.guild.id)][str(message.author.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
+		elif after is not None:
+			with open(os.path.dirname(__file__) + '/../users.json', "r+") as file:
+				self.file_data = json.load(file)
+				if str(after.guild.id) not in self.file_data.keys():
+					self.file_data[str(after.guild.id)] = {}
+				if str(after.id) not in self.file_data[str(after.guild.id)].keys():
+					self.file_data[str(after.guild.id)][str(after.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 
 	def set_data(self):
 		with open(os.path.dirname(__file__) + '/../users.json', "w+") as file:
@@ -47,6 +68,7 @@ class Leveling(commands.Cog):
 		return self.file_data[str(member.guild.id)][str(member.id)]['xps']
 
 	def update_level(self, message):
+		old_user_level = self.file_data[str(message.guild.id)][str(message.author.id)]['level']
 		user_xps = self.get_xps(message.author)
 		new_user_level = 0
 		if user_xps < self.xps_level[1]:
@@ -58,10 +80,16 @@ class Leveling(commands.Cog):
 					break
 		else:
 			new_user_level = len(self.xps_level) - 1
-		self.file_data[str(message.guild.id)][str(message.author.id)]['level'] = new_user_level
+		return old_user_level, new_user_level
+
+	async def send_level_up_message(self, old_level, new_level, message):
+		if new_level > old_level:
+			await message.channel.send(f"{message.author.mention} "
+			                           f"You've leveled up to level {new_level}!")
+			self.file_data[str(message.guild.id)][str(message.author.id)]['level'] = new_level
 
 	def update_xps(self, message):
-		if (int(time.time()) - self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"]) > 1:
+		if (int(time.time()) - self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"]) > 1 and str(message.content).startswith(('!', '?')):
 			self.file_data[str(message.guild.id)][str(message.author.id)]['xps'] += random.randrange(5, 25, 5)
 			self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"] = int(time.time())
 
@@ -77,24 +105,39 @@ class Leveling(commands.Cog):
 					if discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles[i][0], message.guild.roles) in message.author.roles:
 						user_category = i
 						break
+			else:
+				continue
+			break
+		else:
+			await message.channel.send(f"{message.guild.owner.mention} Please create roles using `!create_roles`")
 		if user_category is None:
-			await message.author.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles['citizen'][0], message.guild.roles))
-			user_category = 'citizen'
+			try:
+				await message.author.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles['citizen'][0], message.guild.roles))
+			except AttributeError:
+				# await message.channel.send(f"{message.guild.owner.mention} Please create roles using `!create_roles`")
+				user_category = None
+			else:
+				user_category = 'citizen'
 		return user_category
 
 	async def give_roles_according_to_level(self, user_category, message):
-		user_level = self.get_level(message.author)
-		if discord.utils.find(lambda r: r.name == self.leveling_prefix[user_level] + self.leveling_roles[user_category][0], message.guild.roles) not in message.author.roles:
-			await message.author.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[user_level] + self.leveling_roles[user_category][0], message.guild.roles))
+		if user_category is not None:
+			user_level = self.get_level(message.author)
+			if discord.utils.find(lambda r: r.name == self.leveling_prefix[user_level] + self.leveling_roles[user_category][0], message.guild.roles) not in message.author.roles:
+				await message.author.add_roles(
+					discord.utils.find(lambda r: r.name == self.leveling_prefix[user_level] + self.leveling_roles[user_category][0], message.guild.roles))
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
+		if message.author == self.bot.user:
+			return
 		if message.channel.type != discord.ChannelType.private:
-			self.get_data(message)
+			self.get_data(message=message)
 			if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
 				user_category_1 = await self.return_user_category(message)
 				self.update_xps(message)
-				self.update_level(message)
+				old_level, new_level = self.update_level(message)
+				await self.send_level_up_message(old_level, new_level, message)
 				await self.give_roles_according_to_level(user_category_1, message)
 				self.set_data()
 
@@ -104,6 +147,7 @@ class Leveling(commands.Cog):
 			await after.remove_roles(new_role)
 		elif new_role.name in self.base_roles:
 			# set user xps to 0
+			self.get_data(after=after)
 			self.file_data[str(after.guild.id)][str(after.id)]['xps'] = 0
 			role_category_1 = list(self.leveling_roles.keys())[self.base_roles.index(new_role.name)]
 			await after.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles[role_category_1][0], after.guild.roles))
@@ -201,18 +245,23 @@ class Leveling(commands.Cog):
 				await ctx.send('<@' + str(ctx.author.id) + '> Please mention someone!')
 
 	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	@commands.cooldown(6 * 3600, 1)
 	async def create_roles(self, ctx: commands.Context):
+		perms_list = list(reversed([list(reversed(perms_list_1)) for perms_list_1 in self.perms_list]))
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) not in ctx.guild.roles:
-			await ctx.guild.create_role(name="Respected People", color=discord.colour.Colour(0x8600ff), hoist=True, mentionable=True)
+			await ctx.guild.create_role(name="Respected People", color=discord.Colour(0x8600ff), hoist=True, mentionable=True, permissions=discord.Permissions(2146959319))
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
 		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
-		for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
-			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
+		list_of_discord_perms = permission_builder(perms_list)
+		for i, list_of_discord_color, list_of_discord_perms_1 in zip(self.leveling_roles, list_of_discord_colors, list_of_discord_perms):
+			for (j, k), color_1, perms_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color, list_of_discord_perms_1):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) not in ctx.guild.roles:
-					await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True)
+					await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True, permissions=perms_1)
 		await ctx.send("Created All levelling roles")
 
 	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def delete_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
 			await discord.utils.get(ctx.guild.roles, name="Respected People", color=discord.colour.Colour(0x8600ff), hoist=True, mentionable=True).delete()
@@ -225,6 +274,7 @@ class Leveling(commands.Cog):
 		await ctx.send("Deleted All levelling roles")
 
 	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def delete_all_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
 			await discord.utils.get(ctx.guild.roles, name="Respected People").delete()
@@ -235,6 +285,66 @@ class Leveling(commands.Cog):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
 		await ctx.send("Deleted All levelling roles")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def set_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['level'] = level
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['level'] = level
+		self.set_data()
+		await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def set_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['xps'] = xps
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['xps'] = xps
+		self.set_data()
+		await ctx.send(f"Set xps {xps} to {ctx.author.mention if member == None else member.mention}")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def add_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['xps'] += xps
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['xps'] += xps
+		self.set_data()
+		await ctx.send(f"Added xps {xps} to {ctx.author.mention if member == None else member.mention}")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def remove_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['xps'] -= xps
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['xps'] -= xps
+		self.set_data()
+		await ctx.send(f"Removed xps {xps} to {ctx.author.mention if member == None else member.mention}")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def add_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['level'] += level
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['level'] += level
+		self.set_data()
+		await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
+
+	@commands.command()
+	@commands.check_any(is_guild_owner(), commands.is_owner())
+	async def remove_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
+		if member is None:
+			self.file_data[str(ctx.guild.id)][str(ctx.author.id)]['level'] -= level
+		else:
+			self.file_data[str(member.guild.id)][str(member.id)]['level'] -= level
+		self.set_data()
+		await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
 
 
 def setup(bot):

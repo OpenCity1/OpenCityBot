@@ -14,7 +14,21 @@ logger.addHandler(handler)
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='?')
+
+
+@bot.event
+async def on_command_error(ctx: commands.Context, error):
+	if isinstance(error, commands.CommandNotFound):
+		await ctx.send("Command Not found!")
+	elif isinstance(error, commands.NotOwner):
+		await ctx.send("You're not a owner till now!")
+	elif isinstance(error, commands.NoPrivateMessage):
+		await ctx.send("You can't send this commands here!")
+	elif isinstance(error, commands.CommandOnCooldown):
+		await ctx.send("The command you send is on cooldown!")
+	else:
+		raise error
 
 
 @bot.event
@@ -38,6 +52,7 @@ async def on_ready():
 		for role in roles_needed:
 			if role not in role_names:
 				await guild.create_role(name=role)
+
 
 for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):

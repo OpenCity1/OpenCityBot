@@ -72,16 +72,20 @@ class Fun(commands.Cog):
 
 	@commands.command(name='flipthecoin!', help="Flips the coin!", aliases=['flip', 'coinflip'])
 	async def flip_the_coin(self, ctx: commands.Context):
-		await ctx.send(f"You got {random.choice(('Head', 'Tail'))}")
+		await ctx.send(f"You got {str(random.choice(('Head', 'Tail'))).lower()}")
 
 	@commands.command(name='voter!', help='Helps you to decide anything!', aliases=['vote', 'voteforme'])
 	async def voter(self, ctx: commands.Context, *, messages: str):
 		await ctx.send(
-			f"Answer: {random.choice(messages.split(' '))}"
+			f"Answer: {random.choice(messages.split(','))}"
 		)
 
-	@commands.command()
+	@commands.command(name="wikipedia (WIP or Not Implemented)")
 	async def wikipedia(self, search):
+		pass
+
+	@commands.command(name="urban (WIP or Not Implemented)")
+	async def urban(self, search):
 		pass
 
 

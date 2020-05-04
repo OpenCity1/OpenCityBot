@@ -60,7 +60,7 @@ class Color_Builder(commands.Cog):
 
 		return self.color_dict(rgb_list)
 
-	def color_dict2discord_color_list(self, color_dict1):
+	def color_dict_to_discord_color_list(self, color_dict1):
 		hexes_list = [self.linear_gradient(color_dict1[color][0], color_dict1[color][1])["hex"] for color in color_dict1]
 		# print(hexes)
 		rgb_list = [[self.hex_to_rgb(hex1) for hex1 in hexes] for hexes in hexes_list]
