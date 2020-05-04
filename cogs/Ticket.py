@@ -3,7 +3,7 @@ from io import BytesIO
 import discord
 from discord.ext import commands
 
-from Bot.timeformat_bot import get_date_from_short_form_and_unix_time
+from timeformat_bot import get_date_from_short_form_and_unix_time
 
 
 class Ticket(commands.Cog):
