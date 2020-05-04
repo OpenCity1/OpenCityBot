@@ -22,7 +22,6 @@ def get_date_from_short_form_and_unix_time(short_time="0M", hrs=5, mins=30):
 		                                                                                                                                                                               'D',
 		                                                                                                                                                                               'Y',
 		                                                                                                                                                                               'H',
-		                                                                                                                                                                               'H',
 		                                                                                                                                                                               'MO',
 		                                                                                                                                                                               'S'] else (
 		2592000 if "m" == short_time[1:] else 31556952 if "y" == short_time[1:] else 86400 if "d" == short_time[1:] else 3600 if "h" == short_time[

@@ -52,17 +52,6 @@ class System(commands.Cog):
 		self.bot.load_extension(f'cogs.{extension}')
 		await ctx.send(f"Reloaded {extension}")
 
-	@commands.command()
-	async def invite(self, ctx: commands.Context):
-		embed = discord.Embed(
-			title="Invite Me!",
-			color=discord.Colour.gold(),
-			description=("This is my invite link. You can use this link to add me to your server!\n"
-			             "Link can be found [here](https://discordapp.com/api/oauth2/authorize?client_id=693401671836893235&permissions=8&scope=bot)."
-			             )
-		)
-		await ctx.send(embed=embed)
-
 
 def setup(bot):
 	bot.add_cog(System(bot))

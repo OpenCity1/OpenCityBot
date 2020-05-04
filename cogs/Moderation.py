@@ -51,6 +51,7 @@ class Moderation(commands.Cog):
 		await ctx.send(f'{member} is unkicked because of {reason}.')
 
 	@commands.command(help="Purges the given amount of messages", aliases=['clear'])
+<<<<<<< HEAD:cogs/Moderation.py
 	async def purge(self, ctx: discord.ext.commands.context.Context, amount_of_messages=1, author: Optional[discord.Member] = None):
 		await ctx.channel.purge(limit=amount_of_messages, check=lambda m: True if author is None else m.author == author)
 
@@ -92,6 +93,14 @@ class Moderation(commands.Cog):
 		await message_sent.add_reaction(f":_neutral:705003236687609936")
 		await message_sent.add_reaction(f":_cross:705003237174018158")
 		self.report_number += 1
+=======
+	async def purge(self, ctx: discord.ext.commands.context.Context, amount_of_messages=0):
+		await ctx.channel.purge(limit=amount_of_messages)
+>>>>>>> master:Bot/cogs/Moderation.py
+
+	@commands.command()
+	async def status(self, ctx: commands.Context, member: discord.Member):
+		await ctx.send(member.activity)
 
 
 def setup(bot):
