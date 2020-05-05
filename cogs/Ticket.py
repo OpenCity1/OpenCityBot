@@ -3,7 +3,11 @@ from io import BytesIO
 import discord
 from discord.ext import commands
 
+<<<<<<< HEAD
 from Bot.timeformat_bot import get_date_from_short_form_and_unix_time
+=======
+from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+>>>>>>> 4debb5edfb20bf97d01cc51d7e12f210a5953779
 
 
 class Ticket(commands.Cog):
@@ -33,7 +37,7 @@ class Ticket(commands.Cog):
 			await channel.edit(topic=f"Opened by {user.name} - All messages sent to this channel are being recorded.")
 			await channel.send(embed=embed)
 
-	@commands.command()
+	@commands.command(help="Close a active ticket!")
 	async def close(self, ctx: commands.Context):
 		if ctx.channel.name == f"{str(ctx.author.name).lower()}-{ctx.author.discriminator}" or discord.utils.get(ctx.guild.roles,
 		                                                                                                         name="Support") in ctx.author.roles or ctx.author.id == ctx.guild.owner_id:

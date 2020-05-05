@@ -1,3 +1,5 @@
+import datetime
+import json
 import logging
 import os
 
@@ -5,16 +7,31 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+PREFIX = os.getenv('DEFAULT_PREFIX')
+
+
+def get_prefix(bot1, message):
+	try:
+		prefix_list = json.load(open("prefix.json", "r"))
+	except (json.JSONDecodeError, FileNotFoundError):
+		prefix_list = {}
+	if str(message.guild.id) not in prefix_list.keys():
+		prefix_list[str(message.guild.id)] = {"prefix": PREFIX}
+	with open("prefix.json", "w") as f:
+		json.dump(prefix_list, fp=f, indent=4)
+
+	return prefix_list[str(message.guild.id)]["prefix"]
+
+
+bot = commands.Bot(command_prefix=get_prefix)
+bot.start_time = datetime.datetime.utcnow()
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
-
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-
-bot = commands.Bot(command_prefix='?')
 
 
 @bot.event
