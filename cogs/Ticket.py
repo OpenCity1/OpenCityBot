@@ -4,7 +4,7 @@ from typing import List
 import discord
 from discord.ext import commands
 
-from timeformat_bot import get_date_from_short_form_and_unix_time
+from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
 
 
 class Ticket(commands.Cog):
@@ -38,7 +38,7 @@ class Ticket(commands.Cog):
 			await channel.send(embed=embed)
 			self.ticket_owner_list.append(user)
 
-	@commands.command()
+	@commands.command(help="Close a active ticket!")
 	async def close(self, ctx: commands.Context):
 		transcripts = None
 		if ctx.channel.name == f"{str(ctx.author.name).lower()}-{ctx.author.discriminator}" or discord.utils.get(ctx.guild.roles,

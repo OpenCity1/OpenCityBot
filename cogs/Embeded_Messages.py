@@ -3,7 +3,7 @@ import re
 import discord
 from discord.ext import commands
 
-from timeformat_bot import get_date_from_short_form_and_unix_time
+from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
 
 
 class Embeded_Messages(commands.Cog):

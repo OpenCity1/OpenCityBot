@@ -57,7 +57,7 @@ def linear_gradient(start_hex, finish_hex="#FFFFFF", n=11):
 	return color_dict(rgb_list)
 
 
-def color_dict2discord_color_list(color_dict1):
+def color_dict_to_discord_color_list(color_dict1):
 	hexes_list = [linear_gradient(color_dict1[color][0], color_dict1[color][1])["hex"] for color in color_dict1]
 	# print(hexes)
 	rgb_list = [[hex_to_rgb(hex1) for hex1 in hexes] for hexes in hexes_list]
@@ -79,5 +79,5 @@ colors = {
 	"green": ["#90EE90", "#006400"]
 }
 
-discord_color_list_2 = color_dict2discord_color_list(colors)
+discord_color_list_2 = color_dict_to_discord_color_list(colors)
 # print(len(discord_color_list_2[0]))

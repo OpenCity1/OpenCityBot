@@ -5,7 +5,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from timeformat_bot import get_date_from_short_form_and_unix_time
+from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
 
 
 class Moderation(commands.Cog):
@@ -54,11 +54,11 @@ class Moderation(commands.Cog):
 	async def purge(self, ctx: discord.ext.commands.context.Context, amount_of_messages=1, author: Optional[discord.Member] = None):
 		await ctx.channel.purge(limit=amount_of_messages, check=lambda m: True if author is None else m.author == author)
 
-	@commands.command()
+	@commands.command(help="Get the status!")
 	async def status(self, ctx: commands.Context, member: discord.Member):
 		await ctx.send(member.activity)
 
-	@commands.command()
+	@commands.command(help="Suggest something!")
 	async def suggest(self, ctx: commands.Context, *, suggestion):
 		embed = discord.Embed(
 			title=f"Suggestion #{self.suggestion_number}",
@@ -76,8 +76,8 @@ class Moderation(commands.Cog):
 		await message_sent.add_reaction(f":_already_there:705003236897194004")
 		self.suggestion_number += 1
 
-	@commands.command()
-	async def report(self, ctx: commands.Context, user: discord.Member, *, reason):
+	@commands.command(help="Reports a user with reason!")
+	async def report(self, ctx: commands.Context, user: discord.Member, *, reason="No reason given!"):
 		embed = discord.Embed(
 			title=f"Report #{self.report_number}",
 			description=(
