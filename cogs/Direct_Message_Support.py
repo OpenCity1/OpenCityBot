@@ -1,17 +1,19 @@
 __author__ = ["Sairam", "NameKhan72"]
 
 import asyncio
-import json
-import os
 
 import discord
 from discord.ext import commands
 
 
+# import json
+# import os
+
+
 class Direct_Message_Support(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-		self.guilds_json = json.load(open(os.path.dirname(__file__) + '/../guilds_data.json', "r+"))
+		# self.guilds_json = json.load(open(os.path.dirname(__file__) + '/../guilds_data.json', "r+"))
 		self.welcome_message = (
 			'Hello, welcome to the {} Discord-server! \n \n I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
 						\n\
@@ -52,13 +54,13 @@ class Direct_Message_Support(commands.Cog):
 			5: 'NameKhan72, Sairam, Wizard BINAY',
 			6: 'The game OpenCity is the city simulation and transport simulation with first person view of your city and drivable road vehicles, trains, ships and aircrafts.',
 			7: 'We are not able to answer, but we can spectate.\
-```\
-OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu\n\
-CPU: Core i5 or greater\n\
-RAM: 4GB or Above\n\
-GPU: 2GB or Above\n\
-Storage: 12GB\
-```',
+				```\
+				OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu\n\
+				CPU: Core i5 or greater\n\
+				RAM: 4GB or Above\n\
+				GPU: 2GB or Above\n\
+				Storage: 12GB\
+				```',
 			8: 'Premium is a subscription of OpenCity, it contains assets and features which are very difficult for developers to make.',
 			9: 'Special Sandbox is also a subscription, which is a superset of built-in sandbox, it is named as "Everything Unlimited", as it makes all the currencies unlimited.',
 			10: 'Diamonds are used to get parts of premium subscription.',
@@ -95,7 +97,7 @@ Storage: 12GB\
 	# async def cog_check(self, ctx):
 	# 	return
 
-	@commands.command()
+	@commands.command(help="Gives answers for your question about OpenCity!")
 	async def support(self, ctx: commands.Context):
 		await ctx.send(self.questions)
 
@@ -114,7 +116,7 @@ Storage: 12GB\
 				if int(response_by_user.content) in self.response_dict.keys():
 					async with ctx.channel.typing():
 						try:
-							await ctx.send(f"{self.response_dict[int(response_by_user.content)]} {ctx.author.mention}")
+							await ctx.send(f"{self.response_dict[int(response_by_user.content)]} {ctx.author.mention}".strip("\t").strip())
 						except ValueError:
 							await ctx.send(f"You sent a wrong message! {ctx.author.mention}")
 				elif int(response_by_user.content) == 0:

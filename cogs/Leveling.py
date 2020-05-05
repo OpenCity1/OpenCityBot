@@ -7,16 +7,10 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from color_builder import color_dict2discord_color_list
-from numbers import make_ordinal
-from permision_builder import permission_builder
-
-
-def is_guild_owner():
-	async def predicate(ctx):
-		return ctx.author == ctx.guild.owner
-
-	return commands.check(predicate)
+from cogs.utils.checks import is_guild_owner
+from cogs.utils.color_builder import color_dict_to_discord_color_list
+from cogs.utils.numbers import make_ordinal
+from cogs.utils.permision_builder import permission_builder
 
 
 class Leveling(commands.Cog):
@@ -36,21 +30,19 @@ class Leveling(commands.Cog):
 		                   [36785856, 36785856, 36785857, 103894721, 103898817, 103899073, 108093377, 116481985, 250699713, 1324441537, 1324441537],
 		                   [1861312449, 1861312449, 1861320641, 1861451713, 1861713857, 1861746625, 1861746627, 1861746631, 1878523847, 2146959303, 2146959303]
 		                   ]
-
-		self.file_data = json.load(open(os.path.dirname(__file__) + '/../users.json', "r+"))
-
+		self.file_data = json.load(open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "r+"))
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
 	def get_data(self, message=None, after=None):
 		if message is not None:
-			with open(os.path.dirname(__file__) + '/../users.json', "r+") as file:
+			with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "r+") as file:
 				self.file_data = json.load(file)
 				if str(message.guild.id) not in self.file_data.keys():
 					self.file_data[str(message.guild.id)] = {}
 				if str(message.author.id) not in self.file_data[str(message.guild.id)].keys():
 					self.file_data[str(message.guild.id)][str(message.author.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 		elif after is not None:
-			with open(os.path.dirname(__file__) + '/../users.json', "r+") as file:
+			with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "r+") as file:
 				self.file_data = json.load(file)
 				if str(after.guild.id) not in self.file_data.keys():
 					self.file_data[str(after.guild.id)] = {}
@@ -58,7 +50,7 @@ class Leveling(commands.Cog):
 					self.file_data[str(after.guild.id)][str(after.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 
 	def set_data(self):
-		with open(os.path.dirname(__file__) + '/../users.json', "w+") as file:
+		with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "w+") as file:
 			file.write(json.dumps(self.file_data, indent=4))
 
 	def get_level(self, member: discord.Member):
@@ -95,7 +87,7 @@ class Leveling(commands.Cog):
 
 	async def return_user_category(self, message):
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
-		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
+		list_of_discord_colors = color_dict_to_discord_color_list(self.color_dict)
 		user_category = None
 		for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
 			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
@@ -192,7 +184,7 @@ class Leveling(commands.Cog):
 			elif len(before.roles) > len(after.roles):
 				await self.check_for_removed_role(before, after)
 
-	@commands.command()
+	@commands.command(help="Returns your xps!")
 	async def xps(self, ctx: commands.Context, member: Optional[discord.Member] = None):
 		if member is None:
 			user_xps = self.get_xps(ctx.author)
@@ -218,7 +210,7 @@ class Leveling(commands.Cog):
 			else:
 				await ctx.send('<@' + str(ctx.author.id) + '> Please mention someone!')
 
-	@commands.command()
+	@commands.command(help="Returns your level")
 	async def level(self, ctx: commands.Context, member: Optional[discord.Member] = None):
 		if member is None:
 			user_level = self.get_level(ctx.author)
@@ -244,7 +236,7 @@ class Leveling(commands.Cog):
 			else:
 				await ctx.send('<@' + str(ctx.author.id) + '> Please mention someone!')
 
-	@commands.command()
+	@commands.command(help="Creates leveling roles for this server!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	@commands.cooldown(6 * 3600, 1)
 	async def create_roles(self, ctx: commands.Context):
@@ -252,7 +244,7 @@ class Leveling(commands.Cog):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) not in ctx.guild.roles:
 			await ctx.guild.create_role(name="Respected People", color=discord.Colour(0x8600ff), hoist=True, mentionable=True, permissions=discord.Permissions(2146959319))
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
-		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
+		list_of_discord_colors = color_dict_to_discord_color_list(self.color_dict)
 		list_of_discord_perms = permission_builder(perms_list)
 		for i, list_of_discord_color, list_of_discord_perms_1 in zip(self.leveling_roles, list_of_discord_colors, list_of_discord_perms):
 			for (j, k), color_1, perms_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color, list_of_discord_perms_1):
@@ -260,33 +252,33 @@ class Leveling(commands.Cog):
 					await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True, permissions=perms_1)
 		await ctx.send("Created All levelling roles")
 
-	@commands.command()
+	@commands.command(help="Deletes leveling roles for this server!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def delete_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
 			await discord.utils.get(ctx.guild.roles, name="Respected People", color=discord.colour.Colour(0x8600ff), hoist=True, mentionable=True).delete()
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
-		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
+		list_of_discord_colors = color_dict_to_discord_color_list(self.color_dict)
 		for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
 			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True).delete()
 		await ctx.send("Deleted All levelling roles")
 
-	@commands.command()
-	@commands.check_any(is_guild_owner(), commands.is_owner())
+	@commands.command("Deletes all leveling roles incase of emergency!")
+	@commands.is_owner()
 	async def delete_all_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
 			await discord.utils.get(ctx.guild.roles, name="Respected People").delete()
 		leveling_prefix_1 = list(reversed(self.leveling_prefix))
-		list_of_discord_colors = color_dict2discord_color_list(self.color_dict)
+		list_of_discord_colors = color_dict_to_discord_color_list(self.color_dict)
 		for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
 			for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
 		await ctx.send("Deleted All levelling roles")
 
-	@commands.command()
+	@commands.command(help="Sets level for a user!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def set_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
 		if member is None:
@@ -296,7 +288,7 @@ class Leveling(commands.Cog):
 		self.set_data()
 		await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
 
-	@commands.command()
+	@commands.command(help="Sets xps for a user")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def set_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
 		if member is None:
@@ -306,7 +298,7 @@ class Leveling(commands.Cog):
 		self.set_data()
 		await ctx.send(f"Set xps {xps} to {ctx.author.mention if member == None else member.mention}")
 
-	@commands.command()
+	@commands.command(help="Adds xps to a user!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def add_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
 		if member is None:
@@ -316,7 +308,7 @@ class Leveling(commands.Cog):
 		self.set_data()
 		await ctx.send(f"Added xps {xps} to {ctx.author.mention if member == None else member.mention}")
 
-	@commands.command()
+	@commands.command(help="Removes xps from a user!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def remove_xps(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
 		if member is None:
@@ -326,7 +318,7 @@ class Leveling(commands.Cog):
 		self.set_data()
 		await ctx.send(f"Removed xps {xps} to {ctx.author.mention if member == None else member.mention}")
 
-	@commands.command()
+	@commands.command(help="Adds level to a user!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def add_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
 		if member is None:
@@ -336,7 +328,7 @@ class Leveling(commands.Cog):
 		self.set_data()
 		await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
 
-	@commands.command()
+	@commands.command(help="Removes level from a user!")
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def remove_level(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
 		if member is None:
