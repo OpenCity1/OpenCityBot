@@ -93,6 +93,10 @@ class Moderation(commands.Cog):
 		await message_sent.add_reaction(f":_cross:705003237174018158")
 		self.report_number += 1
 
+	@commands.command()
+	async def status(self, ctx: commands.Context, member: discord.Member):
+		await ctx.send(member.activity)
+
 
 def setup(bot):
 	bot.add_cog(Moderation(bot))
