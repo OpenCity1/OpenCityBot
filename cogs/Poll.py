@@ -13,10 +13,10 @@ class Poll(commands.Cog):
 		reply = ''
 		reply += f"{ctx.author.name}#{ctx.author.discriminator} asks {question}: \n"
 		for answer_index, answer in enumerate(answers):
-			reply += f"{answer_index + 1}\N{variation selector-16}\N{combining enclosing keycap}: {answer} \n"
+			reply += f"{answer_index}\N{variation selector-16}\N{combining enclosing keycap}: {answer} \n"
 		message = await ctx.send(reply)
 		for answer_index in range(len(answers)):
-			await message.add_reaction(f"{answer_index + 1}\N{variation selector-16}\N{combining enclosing keycap}")
+			await message.add_reaction(f"{answer_index}\N{variation selector-16}\N{combining enclosing keycap}")
 
 
 def setup(bot):
