@@ -8,9 +8,12 @@ from discord.ext import commands
 
 
 class MyHelpCommand(commands.HelpCommand):
+	def __init__(self, **options):
+		super().__init__(**options)
+
 	async def send_command_help(self, command: commands.Command):
 		embed = discord.Embed()
-		embed.title = f"{self.context.bot.command_prefix(self.context.bot, self.context.message)}{command.name}"
+		embed.title = f"{self.context.prefix}{command.name}"
 		embed.colour = discord.Colour.dark_green()
 		embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
 		embed.add_field(name="Usage", value=f"`{self.get_command_signature(command)}`")
@@ -27,8 +30,8 @@ class MyHelpCommand(commands.HelpCommand):
 		for cogs in mapping.keys():
 			if cogs is not None:
 				if len(cogs.get_commands()) != 0:
-					embed.add_field(name=cogs.qualified_name, value=" , ".join(f"`{command}`" for command in cogs.get_commands()), inline=False)
-		await self.context.send(embed=embed)
+					embed.add_field(name=cogs.qualified_name, value=" , ".join(f"`{self.context.prefix}{command}`" for command in cogs.get_commands()), inline=False)
+		await self.context.author.send(embed=embed)
 
 	async def send_cog_help(self, cog: commands.Cog):
 		embed = discord.Embed()
@@ -93,8 +96,6 @@ class System(commands.Cog):
 		self.bot.load_extension(f'cogs.{extension}')
 		await ctx.send(f"Reloaded {extension}")
 
-<<<<<<< HEAD
-=======
 	@commands.command(help="Gives you invite for this bot!")
 	async def invite(self, ctx: commands.Context):
 		embed = discord.Embed(
@@ -114,15 +115,31 @@ class System(commands.Cog):
 		days, hours = divmod(hours, 24)
 		await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
 
-	@commands.command(name="setprefix", help="Sets the prefix for a guild!")
-	async def set_prefix(self, ctx: commands.Context, prefix):
+	@commands.command(name="set_prefix", help="Sets the prefix for a guild!")
+	async def set_prefix(self, ctx: commands.Context, prefix, index: Optional[int] = 0):
 		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
-		prefix_list[str(ctx.guild.id)]["prefix"] = prefix
+		prefix_list[str(ctx.guild.id)]["prefix"][index] = prefix
 		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Set prefix to {prefix}")
 
->>>>>>> 4debb5edfb20bf97d01cc51d7e12f210a5953779
+	@commands.command(name="add_prefix", help="Adds a prefix for a guild!")
+	async def add_prefix(self, ctx: commands.Context, prefix):
+		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
+		print(prefix_list)
+		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
+			json.dump(prefix_list, file, indent=4)
+		await ctx.send(f"Added prefix to {prefix}")
+
+	@commands.command(name="remove_prefix", help="Removes the prefix for a guild with index value!")
+	async def remove_prefix(self, ctx: commands.Context, index: Optional[int] = 0):
+		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix = prefix_list[str(ctx.guild.id)]["prefix"].pop(index)
+		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
+			json.dump(prefix_list, file, indent=4)
+		await ctx.send(f"Removed prefix {prefix}")
+
 
 def setup(bot):
 	bot.add_cog(System(bot))

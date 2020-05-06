@@ -18,7 +18,7 @@ def get_prefix(bot1, message):
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
 	if str(message.guild.id) not in prefix_list.keys():
-		prefix_list[str(message.guild.id)] = {"prefix": PREFIX}
+		prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.replace(" ", ""))}
 	with open("prefix.json", "w") as f:
 		json.dump(prefix_list, fp=f, indent=4)
 
@@ -27,6 +27,7 @@ def get_prefix(bot1, message):
 
 bot = commands.Bot(command_prefix=get_prefix)
 bot.start_time = datetime.datetime.utcnow()
+bot.prefix_default = PREFIX
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
