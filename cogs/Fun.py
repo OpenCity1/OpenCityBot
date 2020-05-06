@@ -87,11 +87,11 @@ class Fun(commands.Cog):
 			f"Answer: {random.choice(messages.split(','))}"
 		)
 
-	@commands.command(name="wikipedia (WIP or Not Implemented)", help="Gives you the page in wikipedia")
+	@commands.command(name="wikipedia (WIP or Not Implemented)", help="Gives you the page in wikipedia", hidden=True)
 	async def wikipedia(self, search):
 		pass
 
-	@commands.command(name="urban (WIP or Not Implemented)", help="Give you the page from urban dictionary")
+	@commands.command(name="urban (WIP or Not Implemented)", help="Give you the page from urban dictionary", hidden=True)
 	async def urban(self, search):
 		pass
 

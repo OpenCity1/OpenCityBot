@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -9,14 +11,10 @@ class Mention_Reply(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message(self, message: discord.Message):
-		if message.channel.type != discord.ChannelType.private:
-			for mention in message.mentions:
-				if mention == message.guild.me:
-					await message.channel.send(f"I am OpenCityBot. My prefix is `{self.bot.command_prefix(self.bot, message)}`. ")
-		else:
-			for mention in message.mentions:
-				if mention == self.bot.user:
-					await message.channel.send(f"I am OpenCityBot. My prefix is `{self.bot.prefix_default}`. ")
+		prefix = random.choice(self.bot.command_prefix(self.bot, message))
+		for mention in message.mentions:
+			if mention == self.bot.user:
+				await message.channel.send(f"I am OpenCityBot. To see my prefix do `{prefix}prefix`. ")
 
 
 def setup(bot):
