@@ -54,13 +54,20 @@ class Fun(commands.Cog):
 		)
 
 	@commands.command(help="Says what you send!")
-	async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None, ):
-
-		if channel is None:
-			await ctx.send(message)
+	async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None):
+		if message is not None:
+			if channel is None:
+				await ctx.send(message)
+			else:
+				await channel.send(message)
+				await ctx.send("Message sent")
 		else:
-			await channel.send(message)
-			await ctx.send("Message sent")
+			await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
+
+	# @say.error
+	# async def error_say(self, ctx, error):
+	# 	if isinstance(error, discord.HTTPException):
+	# 		await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
 
 	@commands.command(name='spaceit!', help="Add a space between each letter!")
 	async def space_it(self, ctx: commands.Context, *, message: str):

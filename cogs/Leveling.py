@@ -101,7 +101,7 @@ class Leveling(commands.Cog):
 				continue
 			break
 		else:
-			await message.channel.send(f"{message.guild.owner.mention} Please create roles using `!create_roles`")
+			await message.channel.send(f"{message.guild.owner.mention} Please create roles using `{self.bot.command_prefix(self.bot, message)}create_roles`")
 		if user_category is None:
 			try:
 				await message.author.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles['citizen'][0], message.guild.roles))
