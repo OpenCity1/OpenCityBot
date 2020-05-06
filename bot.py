@@ -17,12 +17,17 @@ def get_prefix(bot1, message):
 		prefix_list = json.load(open("prefix.json", "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
-	if str(message.guild.id) not in prefix_list.keys():
-		prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.replace(" ", ""))}
+	try:
+		if str(message.guild.id) not in prefix_list.keys():
+			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.replace(" ", ""))}
+	except AttributeError:
+		pass
 	with open("prefix.json", "w") as f:
 		json.dump(prefix_list, fp=f, indent=4)
-
-	return prefix_list[str(message.guild.id)]["prefix"]
+	try:
+		return prefix_list[str(message.guild.id)]["prefix"]
+	except AttributeError:
+		return ["?", "!"]
 
 
 bot = commands.Bot(command_prefix=get_prefix)
