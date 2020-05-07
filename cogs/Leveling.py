@@ -1,5 +1,4 @@
 import json
-import os
 import random
 import time
 from typing import Optional
@@ -31,21 +30,21 @@ class Leveling(commands.Cog):
 		                   [1861312449, 1861312449, 1861320641, 1861451713, 1861713857, 1861746625, 1861746627, 1861746631, 1878523847, 2146959303, 2146959303]
 		                   ]
 		try:
-			self.file_data = json.load(open("prefix.json", "r"))
+			self.file_data = json.load(open(self.bot.users_json, "r+"))
 		except (json.JSONDecodeError, FileNotFoundError):
 			self.file_data = {}
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
 	def get_data(self, message=None, after=None):
 		if message is not None:
-			with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "r+") as file:
+			with open(self.bot.users_json, "r+") as file:
 				self.file_data = json.load(file)
 				if str(message.guild.id) not in self.file_data.keys():
 					self.file_data[str(message.guild.id)] = {}
 				if str(message.author.id) not in self.file_data[str(message.guild.id)].keys():
 					self.file_data[str(message.guild.id)][str(message.author.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 		elif after is not None:
-			with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "r+") as file:
+			with open(self.bot.users_json, "r+") as file:
 				self.file_data = json.load(file)
 				if str(after.guild.id) not in self.file_data.keys():
 					self.file_data[str(after.guild.id)] = {}
@@ -53,7 +52,7 @@ class Leveling(commands.Cog):
 					self.file_data[str(after.guild.id)][str(after.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 
 	def set_data(self):
-		with open(os.path.dirname(os.path.dirname(__file__)) + '/users.json', "w+") as file:
+		with open(self.bot.users_json, "w+") as file:
 			file.write(json.dumps(self.file_data, indent=4))
 
 	def get_level(self, member: discord.Member):

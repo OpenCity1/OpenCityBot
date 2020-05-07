@@ -14,10 +14,13 @@ class Ticket(commands.Cog):
 	async def on_raw_reaction_add(self, payload):
 		guild: discord.Guild = self.bot.get_guild(payload.guild_id)
 		emoji = payload.emoji
+		support_role = discord.utils.find(lambda r: r.name == "Support", guild.roles)
+		if support_role is None:
+			await guild.create_role(name="Support")
 		overwrites = {
 			guild.default_role: discord.PermissionOverwrite(read_messages=False),
 			guild.get_member(payload.user_id): discord.PermissionOverwrite(read_messages=True),
-			guild.get_role(703248650129899561): discord.PermissionOverwrite(read_messages=True)
+			support_role: discord.PermissionOverwrite(read_messages=True)
 		}
 		user: discord.Member = guild.get_member(payload.user_id)
 		embed = discord.Embed(

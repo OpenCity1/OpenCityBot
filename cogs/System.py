@@ -120,36 +120,40 @@ class System(commands.Cog):
 
 	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!", invoke_without_command=True)
 	async def prefix(self, ctx: commands.Context):
-		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		await ctx.send(f"My prefixes are {prefix_list[str(ctx.guild.id)]['prefix']}")
 
 	@prefix.command(name="set", help="Sets the prefix for a guild!", hidden=True)
 	async def prefix_set(self, ctx: commands.Context, prefix, index: Optional[int] = 0):
-		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"][index] = prefix
-		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
+		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Set prefix to {prefix}")
 
 	@prefix.command(name="add", help="Adds a prefix for a guild!", hidden=True)
 	async def prefix_add(self, ctx: commands.Context, prefix):
-		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
-		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
+		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Added prefix to {prefix}")
 
 	@prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
 	async def prefix_remove(self, ctx: commands.Context, prefix):
-		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
+		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
-		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
+		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Removed prefix {prefix}")
 
 	@commands.group(name="plugin", help="Shows the enabled plugins for this server!")
 	async def plugin(self, ctx: commands.Context):
 		pass
+
+	@commands.command()
+	async def leave_server(self, ctx: commands.Context):
+		await ctx.guild.leave()
 
 
 def setup(bot):
