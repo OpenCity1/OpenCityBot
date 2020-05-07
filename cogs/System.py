@@ -12,7 +12,7 @@ class MyHelpCommand(commands.HelpCommand):
 		super().__init__(**options)
 
 	async def send_command_help(self, command: commands.Command):
-		if not command.hidden:
+		if not command.hidden or self.context.author.id != self.context.bot.owner_id:
 			embed = discord.Embed()
 			embed.title = f"{self.context.prefix}{command.name}"
 			embed.colour = discord.Colour.dark_green()
@@ -118,7 +118,7 @@ class System(commands.Cog):
 		days, hours = divmod(hours, 24)
 		await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
 
-	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!")
+	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!", invoke_without_command=True)
 	async def prefix(self, ctx: commands.Context):
 		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
 		await ctx.send(f"My prefixes are {prefix_list[str(ctx.guild.id)]['prefix']}")
@@ -135,18 +135,21 @@ class System(commands.Cog):
 	async def prefix_add(self, ctx: commands.Context, prefix):
 		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
-		print(prefix_list)
 		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Added prefix to {prefix}")
 
 	@prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
-	async def prefix_remove(self, ctx: commands.Context, index: Optional[int] = 0):
+	async def prefix_remove(self, ctx: commands.Context, prefix):
 		prefix_list = json.load(open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "r"))
-		prefix = prefix_list[str(ctx.guild.id)]["prefix"].pop(index)
+		prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
 		with open(os.path.dirname(os.path.dirname(__file__)) + "\prefix.json", "w") as file:
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Removed prefix {prefix}")
+
+	@commands.group(name="plugin", help="Shows the enabled plugins for this server!")
+	async def plugin(self, ctx: commands.Context):
+		pass
 
 
 def setup(bot):
