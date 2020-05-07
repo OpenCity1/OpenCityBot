@@ -12,14 +12,14 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
 
 
-def get_prefix(bot1, message):
+def get_prefix(bot, message):
 	try:
 		prefix_list = json.load(open("prefix.json", "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
 	try:
 		if str(message.guild.id) not in prefix_list.keys():
-			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.replace(" ", ""))}
+			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(" "))}
 	except AttributeError:
 		pass
 	with open("prefix.json", "w") as f:
@@ -27,7 +27,7 @@ def get_prefix(bot1, message):
 	try:
 		return prefix_list[str(message.guild.id)]["prefix"]
 	except AttributeError:
-		return ["?", "!"]
+		return list(PREFIX.split(" "))
 
 
 bot = commands.Bot(command_prefix=get_prefix)
@@ -41,9 +41,15 @@ logger.addHandler(handler)
 
 
 @bot.event
-async def on_command_error(ctx: commands.Context, error):
+async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 	if isinstance(error, commands.CommandNotFound):
 		await ctx.send("Command Not found!")
+	elif isinstance(error, commands.MissingPermissions):
+		await ctx.send("You don't have enough permissions.")
+	elif isinstance(error, commands.CheckAnyFailure):
+		await ctx.send("".join(error.args))
+	elif isinstance(error, commands.PrivateMessageOnly):
+		await ctx.send("You're only allowed to use this command in Direct or Private Message only!")
 	elif isinstance(error, commands.NotOwner):
 		await ctx.send("You're not a owner till now!")
 	elif isinstance(error, commands.NoPrivateMessage):
@@ -80,5 +86,16 @@ async def on_ready():
 for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):
 		bot.load_extension(f'cogs.{filename[:-3]}')
+
+
+@bot.command()
+@commands.is_owner()
+async def reload_all_extensions(ctx):
+	for filename1 in os.listdir('./cogs'):
+		if filename1.endswith('.py'):
+			bot.unload_extension(f'cogs.{filename1[:-3]}')
+			bot.load_extension(f'cogs.{filename1[:-3]}')
+	await ctx.send("Reloaded all extensions!")
+
 
 bot.run(TOKEN)

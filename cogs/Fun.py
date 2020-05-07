@@ -4,6 +4,7 @@ import random
 from typing import Optional
 
 import discord
+import wikipedia
 from discord.ext import commands
 
 
@@ -87,13 +88,26 @@ class Fun(commands.Cog):
 			f"Answer: {random.choice(messages.split(','))}"
 		)
 
-	@commands.command(name="wikipedia (WIP or Not Implemented)", help="Gives you the page in wikipedia", hidden=True)
-	async def wikipedia(self, search):
-		pass
+	@commands.command(name="wikipedia", help="Gives you the page in wikipedia", hidden=True)
+	async def wikipedia(self, ctx, search):
+		result = wikipedia.search(search, results=1)
+		page = wikipedia.page(result)
+		await ctx.send(page)
 
 	@commands.command(name="urban (WIP or Not Implemented)", help="Give you the page from urban dictionary", hidden=True)
 	async def urban(self, search):
 		pass
+
+	@commands.command()
+	async def echo(self, ctx, channel: Optional[discord.TextChannel] = None, *, message=None):
+		if message is not None:
+			if channel is None:
+				await ctx.send(message, tts=True)
+			else:
+				await channel.send(message, tts=True)
+				await ctx.send("Message sent")
+		else:
+			await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
 
 
 def setup(bot):
