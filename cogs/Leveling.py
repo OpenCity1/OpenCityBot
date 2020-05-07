@@ -227,6 +227,7 @@ class Leveling(commands.Cog):
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
 		await ctx.send("Deleted All levelling roles")
 
+
 	@commands.group(name="xps", help="Returns your xps!", invoke_without_command=True)
 	async def xps(self, ctx: commands.Context):
 		user_xps = self.get_xps(ctx.author)
@@ -239,13 +240,16 @@ class Leveling(commands.Cog):
 	async def xps_view(self, ctx, member: Optional[discord.Member] = None):
 		if member is None:
 			await ctx.send(f'{ctx.author.mention} Please mention someone!')
+
 		else:
 			if len(ctx.message.mentions) > 0:
 				msg = ''
 				for user in ctx.message.mentions:
 					if not user.bot:
 						if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in user.roles:
+
 							msg += f"{user.mention} is a respected person or have finished leveling.\n"
+
 						else:
 							if str(user.id) not in self.file_data[str(ctx.guild.id)].keys():
 								self.file_data[str(ctx.guild.id)][str(user.id)] = {'xps': 0}
