@@ -35,6 +35,13 @@ class Leveling(commands.Cog):
 			self.file_data = {}
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
+	def cog_check(self, ctx):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
+
 	def get_data(self, message=None, after=None):
 		if message is not None:
 			with open(self.bot.users_json, "r+") as file:
@@ -184,7 +191,7 @@ class Leveling(commands.Cog):
 			elif len(before.roles) > len(after.roles):
 				await self.check_for_removed_role(before, after)
 
-	@commands.command(help="Creates leveling roles for this server!")
+	@commands.command(help="Creates leveling roles for this server!", hidden=True)
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	@commands.cooldown(6 * 3600, 1)
 	async def create_roles(self, ctx: commands.Context):
@@ -200,7 +207,7 @@ class Leveling(commands.Cog):
 					await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True, permissions=perms_1)
 		await ctx.send("Created All levelling roles")
 
-	@commands.command(help="Deletes leveling roles for this server!")
+	@commands.command(help="Deletes leveling roles for this server!", hidden=True)
 	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def delete_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
@@ -213,7 +220,7 @@ class Leveling(commands.Cog):
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True).delete()
 		await ctx.send("Deleted All levelling roles")
 
-	@commands.command(help="Deletes all leveling roles incase of emergency!")
+	@commands.command(help="Deletes all leveling roles incase of emergency!", hidden=True)
 	@commands.is_owner()
 	async def delete_all_roles(self, ctx: commands.Context):
 		if discord.utils.find(lambda r: r.name == 'Respected People', ctx.guild.roles) in ctx.guild.roles:
@@ -225,7 +232,6 @@ class Leveling(commands.Cog):
 				if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
 					await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
 		await ctx.send("Deleted All levelling roles")
-
 
 	@commands.group(name="xps", help="Returns your xps!", invoke_without_command=True)
 	async def xps(self, ctx: commands.Context):

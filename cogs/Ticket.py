@@ -1,3 +1,4 @@
+import json
 from io import BytesIO
 
 import discord
@@ -9,6 +10,13 @@ from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
 class Ticket(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
+	def cog_check(self, ctx):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):

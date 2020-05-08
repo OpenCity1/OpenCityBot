@@ -1,3 +1,4 @@
+import json
 import re
 
 import discord
@@ -10,6 +11,13 @@ class Embeded_Messages(commands.Cog):
 
 	def __init__(self, bot):
 		self.bot = bot
+
+	def cog_check(self, ctx):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	@commands.command()
 	async def test_embed(self, ctx: commands.Context):
