@@ -27,8 +27,8 @@ class Ticket(commands.Cog):
 			await guild.create_role(name="Support")
 		overwrites = {
 			guild.default_role: discord.PermissionOverwrite(read_messages=False),
-			guild.get_member(payload.user_id): discord.PermissionOverwrite(read_messages=True),
-			support_role: discord.PermissionOverwrite(read_messages=True)
+			guild.get_member(payload.user_id): discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True),
+			support_role: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)
 		}
 		user: discord.Member = guild.get_member(payload.user_id)
 		embed = discord.Embed(
