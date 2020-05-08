@@ -197,6 +197,10 @@ class System(commands.Cog):
 	async def leave_server(self, ctx: commands.Context):
 		await ctx.guild.leave()
 
+	@commands.command()
+	async def leave_server(self, ctx: commands.Context):
+		await ctx.guild.leave()
+
 
 def setup(bot):
 	bot.add_cog(System(bot))

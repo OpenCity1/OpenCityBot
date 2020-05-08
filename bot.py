@@ -139,4 +139,5 @@ async def reload_all_extensions(ctx):
 my_presence_per_day.start()
 add_guild_to_json.start()
 
+
 bot.run(TOKEN)
