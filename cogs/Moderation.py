@@ -1,5 +1,5 @@
 __author__ = "Sairam"
-
+import json
 from typing import Optional
 
 import discord
@@ -13,6 +13,13 @@ class Moderation(commands.Cog):
 		self.bot = bot
 		self.suggestion_number = 0
 		self.report_number = 0
+
+	def cog_check(self, ctx):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	@commands.command(help='Bans the given user')
 	@commands.has_guild_permissions(ban_members=True)

@@ -1,6 +1,7 @@
 __author__ = ["Sairam", "NameKhan72"]
 
 import asyncio
+import json
 
 import discord
 from discord.ext import commands
@@ -68,34 +69,19 @@ class Direct_Message_Support(commands.Cog):
 
 		}
 
-	# def get_data(self, guild):
-	# 	with open(os.path.dirname(__file__) + '/../guilds_data.json', "r+") as file:
-	# 		self.guilds_json = json.load(file)
-	# 		if str(guild.id) not in self.guilds_json.keys():
-	# 			self.guilds_json[str(guild.id)] = {"enabled": {
-	# 				"Ban_On_Leave",
-	# 				"Direct_Message_Support",
-	# 				"Fun",
-	# 				"Leveling",
-	# 				"Mention_Reply",
-	# 				"Moderation",
-	# 				"Poll",
-	# 				"System",
-	# 				"Ticket"
-	# 			}}
-	# 			self.guilds_json[str(guild.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
-	#
-	# def set_data(self):
-	# 	with open(os.path.dirname(__file__) + '/../guilds_data.json', "w+") as file:
-	# 		file.write(json.dumps(self.guilds_json, indent=4))
-
 	@commands.Cog.listener()
 	async def on_member_join(self, member: discord.Member):
 		if not member.bot:
 			await member.send(self.welcome_message.format(member.guild.name))
 
-	# async def cog_check(self, ctx):
-	# 	return
+	def cog_check(self, ctx):
+		if ctx.channel.type == discord.ChannelType.private:
+			return True
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	@commands.command(help="Gives answers for your question about OpenCity!")
 	async def support(self, ctx: commands.Context):

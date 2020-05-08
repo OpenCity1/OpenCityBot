@@ -13,6 +13,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
 USERS_FILE = os.getenv('USERS_FILE')
 PREFIX_FILE = os.getenv('PREFIX_JSON')
+GUILD_FILE = os.getenv('GUILDS_JSON')
+VOICE_TEXT_FILE = os.getenv('VOICE_TEXT_JSON')
 
 
 def get_prefix(bot, message):
@@ -33,11 +35,20 @@ def get_prefix(bot, message):
 		return list(PREFIX.split(" "))
 
 
+init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if filename.endswith('.py')]
+# for filename in os.listdir('./cogs'):
+# 	if filename.endswith('.py'):
+# 		init_cogs.append(f'cogs.{filename[:-3]}')
+
 bot = commands.Bot(command_prefix=get_prefix)
 bot.start_time = datetime.datetime.utcnow()
 bot.prefix_default = PREFIX.split(" ")
 bot.users_json = USERS_FILE
 bot.prefix_json = PREFIX_FILE
+bot.guilds_json = GUILD_FILE
+bot.init_cogs = init_cogs
+bot.voice_text_json = VOICE_TEXT_FILE
+
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
@@ -52,6 +63,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 	elif isinstance(error, commands.MissingPermissions):
 		await ctx.send("You don't have enough permissions.")
 	elif isinstance(error, commands.CheckAnyFailure):
+		await ctx.send("".join(error.args))
+	elif isinstance(error, commands.CheckFailure):
 		await ctx.send("".join(error.args))
 	elif isinstance(error, commands.PrivateMessageOnly):
 		await ctx.send("You're only allowed to use this command in Direct or Private Message only!")
@@ -100,6 +113,19 @@ async def my_presence_per_day():
 	print("changed")
 
 
+@tasks.loop(seconds=15)
+async def add_guild_to_json():
+	await bot.wait_until_ready()
+	guilds_data = json.load(open(bot.guilds_json))
+	for guild in bot.guilds:
+		if str(guild.id) not in guilds_data.keys():
+			guilds_data[str(guild.id)] = {}
+			guilds_data[str(guild.id)]['enabled'] = bot.init_cogs
+			guilds_data[str(guild.id)]['disabled'] = [""]
+	with open(bot.guilds_json, "w+") as f:
+		json.dump(guilds_data, f, indent=4)
+
+
 @bot.command()
 @commands.is_owner()
 async def reload_all_extensions(ctx):
@@ -111,5 +137,6 @@ async def reload_all_extensions(ctx):
 
 
 my_presence_per_day.start()
+add_guild_to_json.start()
 
 bot.run(TOKEN)

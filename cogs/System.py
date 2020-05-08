@@ -12,7 +12,7 @@ class MyHelpCommand(commands.HelpCommand):
 		super().__init__(**options)
 
 	async def send_command_help(self, command: commands.Command):
-		if not command.hidden or self.context.author.id != self.context.bot.owner_id:
+		if (not command.hidden) or await self.context.bot.is_owner(self.context.author):
 			embed = discord.Embed()
 			embed.title = f"{self.context.prefix}{command.name}"
 			embed.colour = discord.Colour.dark_green()
@@ -31,8 +31,8 @@ class MyHelpCommand(commands.HelpCommand):
 		for cogs in mapping.keys():
 			if cogs is not None:
 				if len(cogs.get_commands()) != 0:
-					embed.add_field(name=cogs.qualified_name, value=" , ".join(
-						f"`{self.context.prefix}{command}`" for command in cogs.get_commands() if not command.hidden or self.context.author.id != self.context.bot.owner_id),
+					embed.add_field(name=cogs.qualified_name, value=", ".join([
+						f"`{self.context.prefix}{command}`" for command in cogs.get_commands() if not command.hidden or await self.context.bot.is_owner(self.context.author)]),
 					                inline=False)
 		await self.context.author.send(embed=embed)
 
@@ -66,6 +66,15 @@ class System(commands.Cog):
 		self._original_help_command = bot.help_command
 		bot.help_command = MyHelpCommand()
 		bot.help_command.cog = self
+
+	def cog_check(self, ctx):
+		if ctx.channel.type == discord.ChannelType.private:
+			return True
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	def cog_unload(self):
 		self.bot.help_command = self._original_help_command
@@ -147,11 +156,44 @@ class System(commands.Cog):
 			json.dump(prefix_list, file, indent=4)
 		await ctx.send(f"Removed prefix {prefix}")
 
-	@commands.group(name="plugin", help="Shows the enabled plugins for this server!")
+	@commands.group(name="plugin", help="Shows the enabled plugins for this server!", invoke_without_command=True)
 	async def plugin(self, ctx: commands.Context):
-		pass
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		await ctx.send(enabled)
 
-	@commands.command()
+	@plugin.command(name="enable", help="Enables given plugin!")
+	async def plugin_enable(self, ctx: commands.Context, plugin_ext: str):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		disabled = guild_data[str(ctx.guild.id)]["disabled"]
+		plugin_to_enable = f"cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
+		if plugin_to_enable in enabled:
+			await ctx.send("Plugin already enabled!")
+		else:
+			disabled.remove(plugin_to_enable)
+			enabled.append(plugin_to_enable)
+			await ctx.send("Plugin enabled successfully")
+		with open(self.bot.guilds_json, "w+") as f:
+			json.dump(guild_data, f, indent=4)
+
+	@plugin.command(name="disable", help="Disables given plugin!")
+	async def plugin_disable(self, ctx: commands.Context, plugin_ext: str):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		disabled = guild_data[str(ctx.guild.id)]["disabled"]
+		plugin_to_disable = f"cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
+		print(plugin_to_disable)
+		if plugin_to_disable in disabled:
+			await ctx.send("Plugin already disabled!")
+		else:
+			enabled.remove(plugin_to_disable)
+			disabled.append(plugin_to_disable)
+			await ctx.send("Plugin disabled successfully")
+		with open(self.bot.guilds_json, "w+") as f:
+			json.dump(guild_data, f, indent=4)
+
+	@commands.command(hidden=True)
 	async def leave_server(self, ctx: commands.Context):
 		await ctx.guild.leave()
 

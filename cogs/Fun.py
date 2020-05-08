@@ -1,5 +1,6 @@
 __author__ = "Sairam"
 
+import json
 import random
 from typing import Optional
 
@@ -11,6 +12,13 @@ from discord.ext import commands
 class Fun(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
+	def cog_check(self, ctx):
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(ctx.guild.id)]["enabled"]
+		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+			return True
+		return False
 
 	@commands.command(name='99!', help='Gives a random brooklyn 99 quote!')
 	async def _99(self, ctx: discord.ext.commands.context.Context):
