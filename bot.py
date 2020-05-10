@@ -103,7 +103,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 
 @bot.event
 async def on_ready():
-	await bot.change_presence(activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
+	await bot.change_presence(status=discord.Status.offline, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
 	# guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
 	roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
 	for guild_index, guild in enumerate(bot.guilds):
