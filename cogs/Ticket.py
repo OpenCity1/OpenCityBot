@@ -36,7 +36,7 @@ class Ticket(commands.Cog):
 			description=f"Thank you for creating a ticket! {user.mention}\nWe'll get back to you as soon as possible.",
 		)
 		embed.set_footer(text=f"{guild.name} | {get_date_from_short_form_and_unix_time()[1]}")
-		if str(emoji) == "\U0001f44d":
+		if str(emoji) == "👎":
 			if discord.utils.get(guild.categories, name="Support") not in guild.categories:
 				await guild.create_category(name="Support")
 			channel = await guild.create_text_channel(name=f'{user.name}-{user.discriminator}', category=discord.utils.get(user.guild.categories, name="Support"),
@@ -57,6 +57,10 @@ class Ticket(commands.Cog):
 					print(x)
 				await ctx.author.send(file=discord.File(file1, filename=f"{ctx.author.name}_{ctx.author.discriminator}_{ctx.channel.id}.txt"))
 			await ctx.channel.delete()
+
+	@commands.command()
+	async def set_emoji(self, ctx: commands.Context, emoji: discord.Emoji):
+		tickets_data = json.load(open(self.bot.tickets_json))
 
 
 def setup(bot):

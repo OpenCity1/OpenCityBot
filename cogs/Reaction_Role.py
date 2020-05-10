@@ -1,6 +1,7 @@
 import json
 
 import discord
+import emoji
 from discord.ext import commands
 
 
@@ -17,22 +18,100 @@ class Reaction_Role(commands.Cog):
 		return False
 
 	@commands.Cog.listener()
-	async def on_raw_reaction_add(self, payload):
+	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
 		guild: discord.Guild = self.bot.get_guild(payload.guild_id)
-		emoji = payload.emoji
+		emoji_1 = payload.emoji
+		channel: discord.TextChannel = guild.get_channel(payload.channel_id)
 		user: discord.Member = guild.get_member(payload.user_id)
-		if str(emoji) == "\U0001f44d":
-			role = discord.utils.get(guild.roles, name="Test Role 1")
-			await user.add_roles(role)
+		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+		if str(guild.id) not in reaction_roles_data.keys():
+			reaction_roles_data[str(guild.id)] = {}
+			reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
+		for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
+			if str(emoji_1) == str(emoji_2):
+				role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_2)])
+				if not role:
+					await channel.send("Role not available")
+					return
+				await user.add_roles(role)
+
+		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
 		guild: discord.Guild = self.bot.get_guild(payload.guild_id)
-		emoji = payload.emoji
+		emoji_1 = payload.emoji
+		channel: discord.TextChannel = guild.get_channel(payload.channel_id)
 		user: discord.Member = guild.get_member(payload.user_id)
-		if str(emoji) == "\U0001f44d":
-			role = discord.utils.get(guild.roles, name="Test Role 1")
-			await user.remove_roles(role)
+		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+		if str(guild.id) not in reaction_roles_data.keys():
+			reaction_roles_data[str(guild.id)] = {}
+			reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
+		for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
+			if str(emoji_1) == str(emoji_2):
+				role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_1)])
+				if not role:
+					await channel.send("Role not available")
+					return
+				await user.remove_roles(role)
+		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
+
+	@commands.group(aliases=['rr'])
+	async def reaction_roles(self, ctx):
+		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+		if str(ctx.guild.id) not in reaction_roles_data.keys():
+			reaction_roles_data[str(ctx.guild.id)] = {}
+			reaction_roles_data[str(ctx.guild.id)]['reaction_roles'] = {}
+		embed = discord.Embed()
+		embed.title = "Available reaction roles!"
+		msg = ''
+		for index, (key, value) in enumerate(reaction_roles_data[str(ctx.guild.id)]["reaction_roles"].items()):
+			index += 1
+			msg += f"{index}. {key} -> {value}\n"
+		embed.description = msg
+		embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
+		await ctx.send(embed=embed)
+		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
+
+	@reaction_roles.command(name="add")
+	async def rr_add(self, ctx, emoji_2, role_1):
+		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+		if str(ctx.guild.id) not in reaction_roles_data.keys():
+			reaction_roles_data[str(ctx.guild.id)] = {}
+			reaction_roles_data[str(ctx.guild.id)]['reaction_roles'] = {}
+		role = discord.utils.get(ctx.guild.roles, name=role_1)
+		if not role:
+			await ctx.send("Role not available")
+			return
+		list_of_unicode_emojis = [key for key in emoji.EMOJI_UNICODE.values()]
+		list_of_guild_emojis = [f"<:{emoji_1.name}:{emoji_1.id}>" for emoji_1 in ctx.guild.emojis]
+		if emoji_2 in list_of_unicode_emojis:
+			for emoji_3 in list_of_unicode_emojis:
+				if emoji_2 == emoji_3:
+					reaction_roles_data[str(ctx.guild.id)]['reaction_roles'][str(emoji_2)] = role.name
+		if emoji_2 in list_of_guild_emojis:
+			for emoji_3 in list_of_guild_emojis:
+				if emoji_2 == emoji_3:
+					reaction_roles_data[str(ctx.guild.id)]['reaction_roles'][str(emoji_2)] = role.name
+		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
+
+	@reaction_roles.command(name="remove")
+	async def rr_remove(self, ctx, emoji_2):
+		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+		if str(ctx.guild.id) not in reaction_roles_data.keys():
+			reaction_roles_data[str(ctx.guild.id)] = {}
+			reaction_roles_data[str(ctx.guild.id)]['reaction_roles'] = {}
+		list_of_unicode_emojis = [key for key in emoji.EMOJI_UNICODE.values()]
+		list_of_guild_emojis = [f"<:{emoji_1.name}:{emoji_1.id}>" for emoji_1 in ctx.guild.emojis]
+		if emoji_2 in list_of_unicode_emojis:
+			for emoji_3 in list_of_unicode_emojis:
+				if emoji_2 == emoji_3:
+					reaction_roles_data[str(ctx.guild.id)]['reaction_roles'].pop(str(emoji_2))
+		if emoji_2 in list_of_guild_emojis:
+			for emoji_3 in list_of_guild_emojis:
+				if emoji_2 == emoji_3:
+					reaction_roles_data[str(ctx.guild.id)]['reaction_roles'].pop(str(emoji_2))
+		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
 
 def setup(bot):
