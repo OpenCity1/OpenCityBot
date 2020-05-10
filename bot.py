@@ -9,7 +9,8 @@ from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 original_dir = os.getcwd()
-jsons = ['counts.json', 'guilds_data.json', 'prefix.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json', 'voice_text.json']
+jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json',
+         'voice_text.json']
 try:
 	os.listdir('data')
 except FileNotFoundError:
@@ -31,6 +32,9 @@ COUNTS_FILE = os.getenv('COUNTS_JSON')
 SUGGESTIONS_FILE = os.getenv('SUGGESTIONS_JSON')
 REPORTS_FILE = os.getenv('REPORTS_JSON')
 TICKETS_FILE = os.getenv('TICKETS_JSON')
+REACTION_ROLES_FILE = os.getenv('REACTION_ROLES_JSON')
+APPLICATIONS_FILE = os.getenv('APPLICATIONS_JSON')
+
 
 def get_prefix(bot, message):
 	try:
@@ -63,6 +67,8 @@ bot.counts_json = COUNTS_FILE
 bot.suggestions_json = SUGGESTIONS_FILE
 bot.reports_json = REPORTS_FILE
 bot.tickets_json = TICKETS_FILE
+bot.application_json = APPLICATIONS_FILE
+bot.reaction_role_json = REACTION_ROLES_FILE
 bot.start_number = 1000000000000000
 bot.init_cogs = init_cogs
 
