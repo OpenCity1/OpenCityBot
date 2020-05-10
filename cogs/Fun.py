@@ -117,6 +117,91 @@ class Fun(commands.Cog):
 		else:
 			await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
 
+	@commands.command()
+	async def up_down(self, ctx, *, string: str):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\\;',./"
+		output_table = "".join(reversed(list("/˙',؛\[]¿<>„:|{}+‾()*&^%$#@¡~0987654321ZʎXMΛ∩⊥SᴚὉԀONW˥ʞſIHƃℲƎᗡϽq∀zʎxʍʌnʇsɹbdouɯןʞɾıɥƃɟǝpɔqɐ")))
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		output_reverse = "".join(reversed(list(output_string)))
+		await ctx.send(output_reverse)
+
+	@commands.command()
+	async def reverse(self, ctx, *, string: str):
+		output_reverse = "".join(reversed(list(string)))
+		await ctx.send(output_reverse)
+
+	@commands.command()
+	async def small_caps(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def vapour_wave(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０～！＠＃＄％＾＆＊（）＿＋｛｝｜：＂＜＞？［］＼；＇，．／"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def monospace(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿0~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def cursive_script(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def slashed_words(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "a̸b̸c̸d̸e̸f̸g̸h̸i̸j̸k̸l̸m̸n̸o̸p̸q̸r̸s̸t̸u̸v̸w̸x̸y̸z̸A̸B̸C̸D̸E̸F̸G̸H̸I̸J̸K̸L̸M̸N̸O̸P̸Q̸R̸S̸T̸U̸V̸W̸X̸Y̸Z̸1̸2̸3̸4̸5̸6̸7̸8̸9̸0̸~̸!̸@̸#̸$̸%̸^̸&̸*̸(̸)̸_̸+̸{̸}̸|̸:̸\"̸≮≯?̸[̸]̸\̸;̸'̸,̸.̸/̸"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def currency_styled_text(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
+	@commands.command()
+	async def old_english_style(self, ctx, *, string):
+		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+		output_table = "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
+
+		translation = string.maketrans(input_table, output_table)
+
+		output_string = string.translate(translation)
+		await ctx.send(output_string)
+
 
 def setup(bot):
 	bot.add_cog(Fun(bot))
