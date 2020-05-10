@@ -52,6 +52,7 @@ class Suggestions(commands.Cog):
 			"suggestionTitle": title,
 			"suggestionContent": suggestion,
 			"suggestionAuthor": f"{ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id})",
+			"suggestionTime": get_date_from_short_form_and_unix_time()[1],
 			"suggestionType": f"{type1}",
 			"suggestionStatus": "waiting"
 		}
@@ -66,7 +67,7 @@ class Suggestions(commands.Cog):
 	async def suggest_approve(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
-			if suggestion['suggestionID'] == suggestion_id:
+			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
 				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Approved"
@@ -78,6 +79,7 @@ class Suggestions(commands.Cog):
 					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_green()
+				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
 				message_ge = await ctx.channel.fetch_message(suggestion["suggestionMessageID"])
 				await message_ge.edit(embed=embed)
 				suggestion['suggestionStatus'] = "approved"
@@ -85,12 +87,12 @@ class Suggestions(commands.Cog):
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
 	@suggest.command(name="deny")
-	async def suggest_deny(self, ctx: commands.Context, suggestion_id, *, reason: Optional[str] = None):
+	async def suggest_deny(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
 			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(suggestion['suggestionAuthor'].split(' ')[1].strip('( )'))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Denied"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -100,19 +102,21 @@ class Suggestions(commands.Cog):
 					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.blue()
+				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
 				message_ge: discord.Message = await ctx.channel.fetch_message(suggestion["suggestionMessageID"])
 				await message_ge.edit(embed=embed)
 				suggestion['suggestionStatus'] = "denied"
+				await ctx.send(f"Denied suggestion {suggestion_id} because of {reason}")
 
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
 	@suggest.command(name="consider")
-	async def suggest_consider(self, ctx: commands.Context, suggestion_id, *, reason: Optional[str] = None):
+	async def suggest_consider(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
-			if suggestion['suggestionID'] == suggestion_id:
+			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(suggestion['suggestionAuthor'].split(' ')[1].strip('( )'))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Considered"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -122,6 +126,7 @@ class Suggestions(commands.Cog):
 					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_red()
+				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
 				message_ge: discord.Message = await ctx.channel.fetch_message(suggestion["suggestionMessageID"])
 				await message_ge.edit(embed=embed)
 				suggestion['suggestionStatus'] = "considered"
@@ -129,12 +134,12 @@ class Suggestions(commands.Cog):
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
 	@suggest.command(name="implemented")
-	async def suggest_implemented(self, ctx: commands.Context, suggestion_id, *, reason: Optional[str] = None):
+	async def suggest_implemented(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
-			if suggestion['suggestionID'] == suggestion_id:
+			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(suggestion['suggestionAuthor'].split(' ')[1].strip('( )'))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Implemented"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -144,6 +149,7 @@ class Suggestions(commands.Cog):
 					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour(0x00ffff)
+				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
 				message_ge: discord.Message = await ctx.channel.fetch_message(suggestion["suggestionMessageID"])
 				await message_ge.edit(embed=embed)
 				suggestion['suggestionStatus'] = "implemented"
