@@ -8,6 +8,18 @@ import discord
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
+original_dir = os.getcwd()
+jsons = ['counts.json', 'guilds_data.json', 'prefix.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json', 'voice_text.json']
+try:
+	os.listdir('data')
+except FileNotFoundError:
+	os.mkdir('data')
+finally:
+	os.chdir('data')
+	for file in jsons:
+		if file not in os.listdir():
+			open(file, "w").write('{\n\n}')
+os.chdir(original_dir)
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
@@ -19,7 +31,6 @@ COUNTS_FILE = os.getenv('COUNTS_JSON')
 SUGGESTIONS_FILE = os.getenv('SUGGESTIONS_JSON')
 REPORTS_FILE = os.getenv('REPORTS_JSON')
 TICKETS_FILE = os.getenv('TICKETS_JSON')
-
 
 def get_prefix(bot, message):
 	try:
@@ -40,9 +51,6 @@ def get_prefix(bot, message):
 
 
 init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if filename.endswith('.py')]
-# for filename in os.listdir('./cogs'):
-# 	if filename.endswith('.py'):
-# 		init_cogs.append(f'cogs.{filename[:-3]}')
 
 bot = commands.Bot(command_prefix=get_prefix)
 bot.start_time = datetime.datetime.utcnow()
