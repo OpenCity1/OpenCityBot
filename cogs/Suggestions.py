@@ -69,7 +69,7 @@ class Suggestions(commands.Cog):
 		for suggestion in suggestions["suggestions"]:
 			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[-1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Approved"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -92,7 +92,7 @@ class Suggestions(commands.Cog):
 		for suggestion in suggestions["suggestions"]:
 			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[-1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Denied"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -116,7 +116,7 @@ class Suggestions(commands.Cog):
 		for suggestion in suggestions["suggestions"]:
 			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[-1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Considered"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"
@@ -139,7 +139,7 @@ class Suggestions(commands.Cog):
 		for suggestion in suggestions["suggestions"]:
 			if int(suggestion['suggestionID']) == suggestion_id:
 				embed = discord.Embed()
-				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[1].strip('( )')))
+				author = ctx.guild.get_member(int(suggestion['suggestionAuthor'].split(' ')[-1].strip('( )')))
 				embed.title = suggestion['suggestionTitle'] + " Implemented"
 				embed.description = (
 					f"**Suggestion**: {suggestion['suggestionContent']}\n"

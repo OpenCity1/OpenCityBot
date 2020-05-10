@@ -171,7 +171,10 @@ class System(commands.Cog):
 		if plugin_to_enable in enabled:
 			await ctx.send("Plugin already enabled!")
 		else:
-			disabled.remove(plugin_to_enable)
+			try:
+				disabled.remove(plugin_to_enable)
+			except ValueError:
+				pass
 			enabled.append(plugin_to_enable)
 			await ctx.send("Plugin enabled successfully")
 		with open(self.bot.guilds_json, "w+") as f:
