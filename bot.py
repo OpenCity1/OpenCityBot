@@ -68,7 +68,7 @@ bot.suggestions_json = SUGGESTIONS_FILE
 bot.reports_json = REPORTS_FILE
 bot.tickets_json = TICKETS_FILE
 bot.application_json = APPLICATIONS_FILE
-bot.reaction_role_json = REACTION_ROLES_FILE
+bot.reaction_roles_json = REACTION_ROLES_FILE
 bot.start_number = 1000000000000000
 bot.init_cogs = init_cogs
 
@@ -103,7 +103,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 
 @bot.event
 async def on_ready():
-	await bot.change_presence(status=discord.Status.offline, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
+	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
 	# guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
 	roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
 	for guild_index, guild in enumerate(bot.guilds):
