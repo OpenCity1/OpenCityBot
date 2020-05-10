@@ -11,15 +11,19 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
-USERS_FILE = os.getenv('USERS_FILE')
+USERS_FILE = os.getenv('USERS_JSON')
 PREFIX_FILE = os.getenv('PREFIX_JSON')
 GUILD_FILE = os.getenv('GUILDS_JSON')
 VOICE_TEXT_FILE = os.getenv('VOICE_TEXT_JSON')
+COUNTS_FILE = os.getenv('COUNTS_JSON')
+SUGGESTIONS_FILE = os.getenv('SUGGESTIONS_JSON')
+REPORTS_FILE = os.getenv('REPORTS_JSON')
+TICKETS_FILE = os.getenv('TICKETS_JSON')
 
 
 def get_prefix(bot, message):
 	try:
-		prefix_list = json.load(open("prefix.json", "r"))
+		prefix_list = json.load(open("data/prefix.json", "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
 	try:
@@ -27,12 +31,12 @@ def get_prefix(bot, message):
 			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(" "))}
 	except AttributeError:
 		pass
-	with open("prefix.json", "w") as f:
-		json.dump(prefix_list, fp=f, indent=4)
+	with open("data/prefix.json", "w") as f:
+		json.dump(prefix_list, fp=f, indent='\t')
 	try:
-		return prefix_list[str(message.guild.id)]["prefix"]
+		return commands.when_mentioned_or(*prefix_list[str(message.guild.id)]["prefix"])(bot, message)
 	except AttributeError:
-		return list(PREFIX.split(" "))
+		return commands.when_mentioned_or(*list(PREFIX.split(" ")))(bot, message)
 
 
 init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if filename.endswith('.py')]
@@ -46,8 +50,13 @@ bot.prefix_default = PREFIX.split(" ")
 bot.users_json = USERS_FILE
 bot.prefix_json = PREFIX_FILE
 bot.guilds_json = GUILD_FILE
-bot.init_cogs = init_cogs
 bot.voice_text_json = VOICE_TEXT_FILE
+bot.counts_json = COUNTS_FILE
+bot.suggestions_json = SUGGESTIONS_FILE
+bot.reports_json = REPORTS_FILE
+bot.tickets_json = TICKETS_FILE
+bot.start_number = 1000000000000000
+bot.init_cogs = init_cogs
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -123,7 +132,7 @@ async def add_guild_to_json():
 			guilds_data[str(guild.id)]['enabled'] = bot.init_cogs
 			guilds_data[str(guild.id)]['disabled'] = [""]
 	with open(bot.guilds_json, "w+") as f:
-		json.dump(guilds_data, f, indent=4)
+		json.dump(guilds_data, f, indent='\t')
 
 
 @bot.command()

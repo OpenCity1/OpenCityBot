@@ -60,7 +60,7 @@ class Leveling(commands.Cog):
 
 	def set_data(self):
 		with open(self.bot.users_json, "w+") as file:
-			file.write(json.dumps(self.file_data, indent=4))
+			file.write(json.dumps(self.file_data, indent='\t'))
 
 	def get_level(self, member: discord.Member):
 		return self.file_data[str(member.guild.id)][str(member.id)]['level']

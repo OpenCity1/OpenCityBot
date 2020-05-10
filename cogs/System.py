@@ -137,7 +137,7 @@ class System(commands.Cog):
 		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"][index] = prefix
 		with open(self.bot.prefix_json, "w") as file:
-			json.dump(prefix_list, file, indent=4)
+			json.dump(prefix_list, file, indent='\t')
 		await ctx.send(f"Set prefix to {prefix}")
 
 	@prefix.command(name="add", help="Adds a prefix for a guild!", hidden=True)
@@ -145,7 +145,7 @@ class System(commands.Cog):
 		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
 		with open(self.bot.prefix_json, "w") as file:
-			json.dump(prefix_list, file, indent=4)
+			json.dump(prefix_list, file, indent='\t')
 		await ctx.send(f"Added prefix to {prefix}")
 
 	@prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
@@ -153,7 +153,7 @@ class System(commands.Cog):
 		prefix_list = json.load(open(self.bot.prefix_json, "r"))
 		prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
 		with open(self.bot.prefix_json, "w") as file:
-			json.dump(prefix_list, file, indent=4)
+			json.dump(prefix_list, file, indent='\t')
 		await ctx.send(f"Removed prefix {prefix}")
 
 	@commands.group(name="plugin", help="Shows the enabled plugins for this server!", invoke_without_command=True)
@@ -175,7 +175,7 @@ class System(commands.Cog):
 			enabled.append(plugin_to_enable)
 			await ctx.send("Plugin enabled successfully")
 		with open(self.bot.guilds_json, "w+") as f:
-			json.dump(guild_data, f, indent=4)
+			json.dump(guild_data, f, indent='\t')
 
 	@plugin.command(name="disable", help="Disables given plugin!")
 	async def plugin_disable(self, ctx: commands.Context, plugin_ext: str):
@@ -191,7 +191,7 @@ class System(commands.Cog):
 			disabled.append(plugin_to_disable)
 			await ctx.send("Plugin disabled successfully")
 		with open(self.bot.guilds_json, "w+") as f:
-			json.dump(guild_data, f, indent=4)
+			json.dump(guild_data, f, indent='\t')
 
 	@commands.command(hidden=True)
 	async def leave_server(self, ctx: commands.Context):
