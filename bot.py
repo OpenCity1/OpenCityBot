@@ -81,8 +81,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 		await ctx.send("You don't have enough permissions.")
 	elif isinstance(error, commands.CheckAnyFailure):
 		await ctx.send("".join(error.args))
-	# elif isinstance(error, commands.CheckFailure):
-	# 	await ctx.send("".join(error.args))
+	elif isinstance(error, commands.CheckFailure):
+		await ctx.send("".join(error.args))
 	elif isinstance(error, commands.PrivateMessageOnly):
 		await ctx.send("You're only allowed to use this command in Direct or Private Message only!")
 	elif isinstance(error, commands.NotOwner):
