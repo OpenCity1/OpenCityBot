@@ -15,6 +15,8 @@ class Suggestions(commands.Cog):
 	def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
+		if await self.bot.is_owner(ctx.author):
+			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
 		if f"cogs.{ctx.cog.qualified_name}" in enabled:
@@ -24,11 +26,15 @@ class Suggestions(commands.Cog):
 	@commands.group(help="Suggest something!", invoke_without_command=True)
 	async def suggest(self, ctx: commands.Context, type1, *, suggestion):
 		counts = json.load(open(self.bot.counts_json))
-		if "suggestion_count" not in counts.keys():
-			counts["suggestion_count"] = self.bot.start_number
-		if "suggestion_number" not in counts.keys():
-			counts["suggestion_number"] = 1
-		title = f"Suggestion #{counts['suggestion_number']}"
+		if "id" not in counts.keys():
+			counts["id"] = {}
+		if str(ctx.guild.id) not in counts.keys():
+			counts[str(ctx.guild.id)] = {}
+		if "suggestion_id" not in counts["id"].keys():
+			counts["id"]["suggestion_id"] = self.bot.start_number
+		if "suggestion_number" not in counts[str(ctx.guild.id)].keys():
+			counts[str(ctx.guild.id)]["suggestion_number"] = 1
+		title = f"Suggestion #{counts[str(ctx.guild.id)]['suggestion_number']}"
 		embed = discord.Embed(
 			title=title,
 			description=(
@@ -36,7 +42,7 @@ class Suggestions(commands.Cog):
 				f"**Suggestion by**: {ctx.author.mention}"
 			),
 			color=discord.Colour.green()
-		).set_footer(text=f"SuggestionID: {counts['suggestion_count']} | {get_date_from_short_form_and_unix_time()[1]}")
+		).set_footer(text=f"SuggestionID: {counts['id']['suggestion_id']} | {get_date_from_short_form_and_unix_time()[1]}")
 		embed.set_author(name=f"{ctx.author.name}", icon_url=f"{ctx.author.avatar_url}")
 		message_sent = await ctx.send(embed=embed)
 		await message_sent.add_reaction(f":_tick:705003237174018179")
@@ -47,7 +53,7 @@ class Suggestions(commands.Cog):
 		if "suggestions" not in suggestions.keys():
 			suggestions["suggestions"] = []
 		suggestion_1 = {
-			"suggestionID": counts["suggestion_count"],
+			"suggestionID": counts['id']["suggestion_id"],
 			"suggestionMessageID": message_sent.id,
 			"suggestionTitle": title,
 			"suggestionContent": suggestion,
@@ -56,14 +62,14 @@ class Suggestions(commands.Cog):
 			"suggestionType": f"{type1}",
 			"suggestionStatus": "waiting"
 		}
-		counts["suggestion_count"] += 1
-		counts["suggestion_number"] += 1
+		counts['id']["suggestion_id"] += 1
+		counts[str(ctx.guild.id)]["suggestion_number"] += 1
 		json.dump(counts, open(self.bot.counts_json, "w+"), indent='\t')
 		suggestions["suggestions"].append(suggestion_1)
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 		await ctx.author.send("Your suggestion is sent!, This is how your suggestion look like!", embed=embed)
 
-	@suggest.command(name="approve")
+	@suggest.command(name="approve", help="Approves a suggestion.")
 	async def suggest_approve(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
@@ -86,7 +92,7 @@ class Suggestions(commands.Cog):
 
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
-	@suggest.command(name="deny")
+	@suggest.command(name="deny", help="Denies a suggestion.")
 	async def suggest_deny(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
@@ -110,7 +116,7 @@ class Suggestions(commands.Cog):
 
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
-	@suggest.command(name="consider")
+	@suggest.command(name="consider", help="Marks a suggestion as considered.")
 	async def suggest_consider(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:
@@ -133,7 +139,7 @@ class Suggestions(commands.Cog):
 
 		json.dump(suggestions, open(self.bot.suggestions_json, "w+"), indent='\t')
 
-	@suggest.command(name="implemented")
+	@suggest.command(name="implemented", help="Marks a suggestion as already implemented.")
 	async def suggest_implemented(self, ctx: commands.Context, suggestion_id: int, *, reason: Optional[str] = None):
 		suggestions = json.load(open(self.bot.suggestions_json))
 		for suggestion in suggestions["suggestions"]:

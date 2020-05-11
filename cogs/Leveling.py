@@ -36,6 +36,10 @@ class Leveling(commands.Cog):
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
 	def cog_check(self, ctx):
+		if ctx.channel.type == discord.ChannelType.private:
+			return True
+		if await self.bot.is_owner(ctx.author):
+			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
 		if f"cogs.{ctx.cog.qualified_name}" in enabled:
