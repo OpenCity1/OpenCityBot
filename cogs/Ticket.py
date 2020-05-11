@@ -24,7 +24,21 @@ class Ticket(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload):
+
 		guild: discord.Guild = self.bot.get_guild(payload.guild_id)
+		counts = json.load(open(self.bot.counts_json))
+		if "id" not in counts.keys():
+			counts["id"] = {}
+		if str(guild.id) not in counts.keys():
+			counts[str(guild.id)] = {}
+		if "ticket_id" not in counts["id"].keys():
+			counts["id"]["ticket_id"] = self.bot.start_number
+		if "ticket_number" not in counts[str(guild.id)].keys():
+			counts[str(guild.id)]["ticket_number"] = 1
+		tickets_data = json.load(open(self.bot.tickets_json))
+		if str(guild.id) not in tickets_data:
+			tickets_data[str(guild.id)] = {}
+			tickets_data[str(guild.id)]['ticket_emoji'] = []
 		emoji = payload.emoji
 		support_role = discord.utils.find(lambda r: r.name == "Support", guild.roles)
 		if support_role is None:
@@ -36,35 +50,100 @@ class Ticket(commands.Cog):
 		}
 		user: discord.Member = guild.get_member(payload.user_id)
 		embed = discord.Embed(
-			title=f"Thank you for creating a ticket! {user.name}",
+			title=f"Thank you for creating a ticket! {user.name} This is Ticket #{counts[str(guild.id)]['ticket_number']}",
 			description=f"Thank you for creating a ticket! {user.mention}\nWe'll get back to you as soon as possible.",
 		)
-		embed.set_footer(text=f"{guild.name} | {get_date_from_short_form_and_unix_time()[1]}")
-		if str(emoji) == "👎":
-			if discord.utils.get(guild.categories, name="Support") not in guild.categories:
-				await guild.create_category(name="Support")
-			channel = await guild.create_text_channel(name=f'{user.name}-{user.discriminator}', category=discord.utils.get(user.guild.categories, name="Support"),
-			                                          overwrites=overwrites)
-			await channel.edit(topic=f"Opened by {user.name} - All messages sent to this channel are being recorded.")
-			await channel.send(embed=embed)
+		embed.set_footer(text=f"TicketID: {counts['id']['ticket_id']} | {get_date_from_short_form_and_unix_time()[1]}")
+		for emoji_2 in tickets_data[str(guild.id)]['ticket_emoji']:
+			if str(emoji) == str(emoji_2):
+				if discord.utils.get(guild.categories, name="Support") not in guild.categories:
+					await guild.create_category(name="Support")
+				channel = await guild.create_text_channel(name=f'{user.name}-{user.discriminator}', category=discord.utils.get(user.guild.categories, name="Support"),
+				                                          overwrites=overwrites)
+				await channel.edit(topic=f"Opened by {user.name} - All messages sent to this channel are being recorded.")
+				await channel.send(embed=embed)
+			tickets_data = json.load(open(self.bot.tickets_json))
+			if "tickets" not in tickets_data.keys():
+				tickets_data["tickets"] = []
+
+			ticket_1 = {
+				"ticketID": counts['id']["ticket_id"],
+				"ticketAuthor": f"{user.name}#{user.discriminator} ({user.id})",
+				"ticketOpenedTime": get_date_from_short_form_and_unix_time()[1],
+				"ticketClosedTime": "Not closed till now!",
+				"ticketStatus": "opened"
+			}
+			tickets_data["tickets"].append(ticket_1)
+			counts[str(guild.id)]["ticket_number"] += 1
+			counts["id"]["ticket_id"] += 1
+			json.dump(counts, open(self.bot.counts_json, "w"), indent='\t')
+			json.dump(tickets_data, open(self.bot.tickets_json, 'w'), indent='\t')
 
 	@commands.command(help="Close a active ticket!")
-	async def close(self, ctx: commands.Context):
-		if ctx.channel.name == f"{str(ctx.author.name).lower()}-{ctx.author.discriminator}" or discord.utils.get(ctx.guild.roles,
-		                                                                                                         name="Support") in ctx.author.roles or ctx.author.id == ctx.guild.owner_id:
-			transcripts = await ctx.channel.history().flatten()
-			with BytesIO() as file1:
-				for transcript in transcripts:
-					print((str(transcript.content)))
-					file1.write((str(transcript.content).encode()) + '\n'.encode())
-					x = file1.readline(1)
-					print(x)
-				await ctx.author.send(file=discord.File(file1, filename=f"{ctx.author.name}_{ctx.author.discriminator}_{ctx.channel.id}.txt"))
-			await ctx.channel.delete()
-
-	@commands.command()
-	async def set_emoji(self, ctx: commands.Context, emoji: discord.Emoji):
+	async def close(self, ctx: commands.Context, ticket_id: int):
 		tickets_data = json.load(open(self.bot.tickets_json))
+		transcripts = None
+		for ticket in tickets_data['tickets']:
+			if ticket_id == int(ticket['ticketID']):
+				ticket_owner = ctx.guild.get_member(int(ticket['ticketAuthor'].split(' ')[-1].strip('( )')))
+				if ctx.channel.name == f"{str(ctx.author.name).lower()}-{ctx.author.discriminator}" or discord.utils.get(ctx.guild.roles,
+				                                                                                                         name="Support") in ctx.author.roles or ctx.author.id == ctx.guild.owner_id:
+					try:
+						transcripts = reversed(list(await ctx.channel.history().flatten()))
+					except discord.errors.NotFound:
+						pass
+					transcript_temp = f"Transcript for {ticket_owner.name}#{ticket_owner.discriminator} ({ticket_owner.id}) \n"
+					file1 = BytesIO(initial_bytes=bytes(transcript_temp + "\n".join(
+						f"{transcript.author.name}#{transcript.author.discriminator} ({transcript.author.id}): {transcript.content}" for transcript in transcripts),
+					                                    encoding="utf-8"))
+					await ticket_owner.send(file=discord.File(file1, filename=f"{ticket_owner.name}_{ticket_owner.discriminator}_{ctx.channel.id}.txt"))
+					file1.close()
+					await ctx.channel.delete()
+
+	@commands.group(name="emoji")
+	async def ticket_emoji(self, ctx: commands.Context):
+		tickets_data = json.load(open(self.bot.tickets_json))
+		if str(ctx.guild.id) not in tickets_data:
+			tickets_data[str(ctx.guild.id)] = {}
+			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = []
+		embed = discord.Embed()
+		embed.title = "Available emojis for the ticket in this server!"
+		msg = ''
+		for index, emoji in enumerate(tickets_data[str(ctx.guild.id)]['ticket_emoji'], start=1):
+			msg += f"{index}. {emoji}"
+		embed.description = msg
+		await ctx.send(embed=embed)
+		json.dump(tickets_data, open(self.bot.tickets_json, "w"), indent='\t')
+
+	@ticket_emoji.command(name="set")
+	async def set_emoji(self, ctx: commands.Context, emoji_1, index: int):
+		tickets_data = json.load(open(self.bot.tickets_json))
+		if str(ctx.guild.id) not in tickets_data:
+			tickets_data[str(ctx.guild.id)] = {}
+			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = []
+		tickets_data[str(ctx.guild.id)]['ticket_emoji'].insert(index, emoji_1)
+		await ctx.send(f"Set emoji {emoji_1} in index {index}")
+		json.dump(tickets_data, open(self.bot.tickets_json, "w"), indent='\t')
+
+	@ticket_emoji.command(name="add")
+	async def add_emoji(self, ctx: commands.Context, emoji_1):
+		tickets_data = json.load(open(self.bot.tickets_json))
+		if str(ctx.guild.id) not in tickets_data:
+			tickets_data[str(ctx.guild.id)] = {}
+			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = []
+		tickets_data[str(ctx.guild.id)]['ticket_emoji'].append(emoji_1)
+		await ctx.send(f"Added emoji {emoji_1} to index {len(tickets_data[str(ctx.guild.id)]['ticket_emoji']) - 1}")
+		json.dump(tickets_data, open(self.bot.tickets_json, "w"), indent='\t')
+
+	@ticket_emoji.command(name="remove")
+	async def remove_emoji(self, ctx: commands.Context, emoji_1):
+		tickets_data = json.load(open(self.bot.tickets_json))
+		if str(ctx.guild.id) not in tickets_data:
+			tickets_data[str(ctx.guild.id)] = {}
+			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = []
+		index = tickets_data[str(ctx.guild.id)]['ticket_emoji'].remove(emoji_1)
+		await ctx.send(f"Removed emoji {emoji_1} to index {index}")
+		json.dump(tickets_data, open(self.bot.tickets_json, "w"), indent='\t')
 
 
 def setup(bot):
