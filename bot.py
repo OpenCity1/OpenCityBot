@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 original_dir = os.getcwd()
 jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json',
          'voice_text.json']
+
 try:
 	os.listdir('data')
 except FileNotFoundError:
