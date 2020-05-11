@@ -74,7 +74,7 @@ class Direct_Message_Support(commands.Cog):
 		if not member.bot:
 			await member.send(self.welcome_message.format(member.guild.name))
 
-	def cog_check(self, ctx):
+	async def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
 		if await self.bot.is_owner(ctx.author):

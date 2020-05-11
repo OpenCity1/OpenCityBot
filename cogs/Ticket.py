@@ -11,7 +11,7 @@ class Ticket(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	def cog_check(self, ctx):
+	async def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
 		if await self.bot.is_owner(ctx.author):
