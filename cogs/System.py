@@ -8,8 +8,8 @@ class System(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	def cog_check(self, ctx):
-		return self.bot.is_owner(ctx.author)
+	async def cog_check(self, ctx):
+		return await self.bot.is_owner(ctx.author)
 
 	@commands.command(help="Loads an extension", hidden=True)
 	async def load(self, ctx, extension):

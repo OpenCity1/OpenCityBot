@@ -70,7 +70,7 @@ class Information(commands.Cog):
 	def cog_unload(self):
 		self.bot.help_command = self._original_help_command
 
-	def cog_check(self, ctx):
+	async def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
 		if await self.bot.is_owner(ctx.author):

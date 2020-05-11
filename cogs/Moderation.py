@@ -12,7 +12,7 @@ class Moderation(commands.Cog):
 		self.suggestion_number = 0
 		self.report_number = 0
 
-	def cog_check(self, ctx):
+	async def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
 		if await self.bot.is_owner(ctx.author):

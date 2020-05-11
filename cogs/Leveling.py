@@ -35,7 +35,7 @@ class Leveling(commands.Cog):
 			self.file_data = {}
 		self.base_roles = [self.leveling_prefix[0] + self.leveling_roles[i][0] for i in self.leveling_roles]
 
-	def cog_check(self, ctx):
+	async def cog_check(self, ctx):
 		if ctx.channel.type == discord.ChannelType.private:
 			return True
 		if await self.bot.is_owner(ctx.author):
