@@ -1,6 +1,7 @@
 import json
 from typing import Optional
 
+import discord
 from discord.ext import commands
 
 
@@ -14,12 +15,20 @@ class Configuration(commands.Cog):
 
 	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!", invoke_without_command=True)
 	async def prefix(self, ctx: commands.Context):
-		prefix_list = json.load(open(self.bot.prefix_json, "r"))
-		await ctx.send(f"My prefixes are {prefix_list[str(ctx.guild.id)]['prefix']}")
+		prefix_list = json.load(open(self.bot.prefix_json))
+		embed = discord.Embed()
+		embed.title = "Available prefixes for this server!"
+		msg = ''
+		for index, item in enumerate(prefix_list[str(ctx.guild.id)]["prefix"]):
+			index += 1
+			msg += f"{index}. {item}\n"
+		embed.description = msg
+		embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
+		await ctx.send(embed=embed)
 
 	@prefix.command(name="set", help="Sets the prefix for a guild!", hidden=True)
 	async def prefix_set(self, ctx: commands.Context, prefix, index: Optional[int] = 0):
-		prefix_list = json.load(open(self.bot.prefix_json, "r"))
+		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"][index] = prefix
 		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent='\t')
@@ -27,7 +36,7 @@ class Configuration(commands.Cog):
 
 	@prefix.command(name="add", help="Adds a prefix for a guild!", hidden=True)
 	async def prefix_add(self, ctx: commands.Context, prefix):
-		prefix_list = json.load(open(self.bot.prefix_json, "r"))
+		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
 		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent='\t')
@@ -35,7 +44,7 @@ class Configuration(commands.Cog):
 
 	@prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
 	async def prefix_remove(self, ctx: commands.Context, prefix):
-		prefix_list = json.load(open(self.bot.prefix_json, "r"))
+		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
 		with open(self.bot.prefix_json, "w") as file:
 			json.dump(prefix_list, file, indent='\t')
@@ -45,7 +54,15 @@ class Configuration(commands.Cog):
 	async def plugin(self, ctx: commands.Context):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		await ctx.send(enabled)
+		embed = discord.Embed()
+		embed.title = "Enabled modules of this server!"
+		msg = ''
+		for index, item in enumerate(enabled):
+			index += 1
+			msg += f"{index}. {item.lstrip('cogs.')}\n"
+		embed.description = msg
+		embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
+		await ctx.send(embed=embed)
 
 	@plugin.command(name="enable", help="Enables given plugin!")
 	async def plugin_enable(self, ctx: commands.Context, plugin_ext: str):

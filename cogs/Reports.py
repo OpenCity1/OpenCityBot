@@ -23,11 +23,15 @@ class Reports(commands.Cog):
 	@commands.group(help="Reports a user with reason!", invoke_without_command=True)
 	async def report(self, ctx: commands.Context, user: discord.Member, *, reason="No reason given!"):
 		counts = json.load(open(self.bot.counts_json))
-		if "report_count" not in counts.keys():
-			counts["report_count"] = self.bot.start_number
-		if "report_number" not in counts.keys():
-			counts["report_number"] = 1
-		title = f"""Report #{counts["report_number"]}"""
+		if "id" not in counts.keys():
+			counts["id"] = {}
+		if str(ctx.guild.id) not in counts.keys():
+			counts[str(ctx.guild.id)] = {}
+		if "report_id" not in counts["id"].keys():
+			counts["id"]["report_id"] = self.bot.start_number
+		if "report_number" not in counts[str(ctx.guild.id)].keys():
+			counts[str(ctx.guild.id)]["report_number"] = 1
+		title = f"""Report #{counts[str(ctx.guild.id)]["report_number"]}"""
 		embed = discord.Embed(
 			title=title,
 			description=(
@@ -37,7 +41,7 @@ class Reports(commands.Cog):
 			),
 			color=discord.Colour.blurple()
 		)
-		embed.set_footer(text=f"""ReportID: {counts["report_count"]} | {get_date_from_short_form_and_unix_time()[1]}""")
+		embed.set_footer(text=f"""ReportID: {counts["id"]["report_id"]} | {get_date_from_short_form_and_unix_time()[1]}""")
 		embed.set_author(name=f"{ctx.author.name}", icon_url=f"{ctx.author.avatar_url}")
 		message_sent = await ctx.send(embed=embed)
 		await message_sent.add_reaction(f":_tick:705003237174018179")
@@ -47,7 +51,7 @@ class Reports(commands.Cog):
 		if "reports" not in reports.keys():
 			reports["reports"] = []
 		report_1 = {
-			"reportID": counts["report_count"],
+			"reportID": counts['id']["report_id"],
 			"reportMessageID": message_sent.id,
 			"reportTitle": title,
 			"reportReason": reason,
@@ -57,15 +61,15 @@ class Reports(commands.Cog):
 			"reportUser": f"{user.name}#{user.discriminator} ({user.id})"
 		}
 		reports["reports"].append(report_1)
-		counts["report_count"] += 1
-		counts["report_number"] += 1
+		counts['id']["report_id"] += 1
+		counts[str(ctx.guild.id)]["report_number"] += 1
 
 		json.dump(reports, open(self.bot.reports_json, "w"), indent='\t')
 		json.dump(counts, open(self.bot.counts_json, "w"), indent='\t')
 
 		await ctx.author.send("Your report successfully sent!, this is how it would look like", embed=embed)
 
-	@report.command(name="accept")
+	@report.command(name="accept", help="Accepts a report")
 	async def report_accept(self, ctx: commands.Context, report_id: int, *, reason):
 		reports = json.load(open(self.bot.reports_json))
 		for report in reports["reports"]:
@@ -90,7 +94,7 @@ class Reports(commands.Cog):
 
 		json.dump(reports, open(self.bot.reports_json, "w+"), indent='\t')
 
-	@report.command(name="decline")
+	@report.command(name="decline", help="Declines a report")
 	async def report_decline(self, ctx: commands.Context, report_id: int, *, reason):
 		reports = json.load(open(self.bot.reports_json))
 		for report in reports["reports"]:
