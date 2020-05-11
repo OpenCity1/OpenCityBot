@@ -36,7 +36,7 @@ REACTION_ROLES_FILE = os.getenv('REACTION_ROLES_JSON')
 APPLICATIONS_FILE = os.getenv('APPLICATIONS_JSON')
 
 
-def get_prefix(bot, message):
+def get_prefix(bot_1, message):
 	try:
 		prefix_list = json.load(open("data/prefix.json", "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
@@ -132,7 +132,8 @@ for filename in os.listdir('./cogs'):
 @tasks.loop(hours=1)
 async def my_presence_per_day():
 	await bot.wait_until_ready()
-	await bot.change_presence(activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
+	status = random.choice([discord.Status.idle, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.dnd, discord.Status.invisible])
+	await bot.change_presence(status=status, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
 	print("changed")
 
 
