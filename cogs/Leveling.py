@@ -132,17 +132,20 @@ class Leveling(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
-		if message.author == self.bot.user:
-			return
-		if message.channel.type != discord.ChannelType.private:
-			self.get_data(message=message)
-			if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
-				user_category_1 = await self.return_user_category(message)
-				self.update_xps(message)
-				old_level, new_level = self.update_level(message)
-				await self.send_level_up_message(old_level, new_level, message)
-				await self.give_roles_according_to_level(user_category_1, message)
-				self.set_data()
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(message.guild.id)]["enabled"]
+		if f"cogs.{self.qualified_name}" in enabled:
+			if message.author == self.bot.user:
+				return
+			if message.channel.type != discord.ChannelType.private:
+				self.get_data(message=message)
+				if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
+					user_category_1 = await self.return_user_category(message)
+					self.update_xps(message)
+					old_level, new_level = self.update_level(message)
+					await self.send_level_up_message(old_level, new_level, message)
+					await self.give_roles_according_to_level(user_category_1, message)
+					self.set_data()
 
 	async def check_new_role(self, before, after):
 		new_role = next(role for role in after.roles if role not in before.roles)
@@ -188,12 +191,15 @@ class Leveling(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_member_update(self, before, after):
-		if discord.utils.find(lambda r: r.name == 'Respected People', after.guild.roles) not in after.roles:
-			if len(before.roles) < len(after.roles):
-				new_role_1 = await self.check_new_role(before, after)
-				await self.check_respected_people_status(new_role_1, after)
-			elif len(before.roles) > len(after.roles):
-				await self.check_for_removed_role(before, after)
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(after.guild.id)]["enabled"]
+		if f"cogs.{self.qualified_name}" in enabled:
+			if discord.utils.find(lambda r: r.name == 'Respected People', after.guild.roles) not in after.roles:
+				if len(before.roles) < len(after.roles):
+					new_role_1 = await self.check_new_role(before, after)
+					await self.check_respected_people_status(new_role_1, after)
+				elif len(before.roles) > len(after.roles):
+					await self.check_for_removed_role(before, after)
 
 	@commands.command(help="Creates leveling roles for this server!", hidden=True)
 	@commands.check_any(is_guild_owner(), commands.is_owner())
