@@ -142,18 +142,20 @@ class Applications(commands.Cog):
 		await ctx.send("please say the amount of question you would like to enter?")
 
 		def int_check(message: discord.Message) -> bool:
-			return message.author == ctx.author and type(message.content) == int
+			return message.author == ctx.author and type(int(message.content)) == int
 
 		def question_check(message: discord.Message) -> bool:
 			return message.author == ctx.author and message.content.endswith('?')
 
-		count = self.bot.wait_for('message', check=int_check)
-		for i in range(count):
-			question = self.bot.wait_for('message', check=question_check)
-			application_data[str(ctx.guild.id)][application_type].append(question)
+		count = await self.bot.wait_for('message', check=int_check)
+		for i in range(int(count.content)):
+			await ctx.send("Please say the question")
+			question = await self.bot.wait_for('message', check=question_check)
+			application_data[str(ctx.guild.id)][application_type].append(question.content)
 
 		await ctx.send("Questions added successfully")
 		await ctx.send("To add extra questions or remove unnecessary questions, use `!a questions add {question}`")
+		json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
 	@applications.command(name='remove', help="Removes a application from a server.")
 	async def application_remove(self, ctx, application_type):
@@ -162,6 +164,7 @@ class Applications(commands.Cog):
 			application_data[str(ctx.guild.id)] = {}
 		application_data[str(ctx.guild.id)].pop(application_type)
 		await ctx.send("removed application successfully")
+		json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
 
 def setup(bot):
