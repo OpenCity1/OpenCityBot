@@ -23,19 +23,18 @@ class Mention_Reply(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message(self, message: discord.Message):
-		prefix = random.choice(self.bot.command_prefix(self.bot, message))
-		if message.channel.type == discord.ChannelType.private:
-			if message.content.startswith('<@'):
-				for mention in message.mentions:
-					if mention == self.bot.user:
-						await message.channel.send(f"I am OpenCityBot. To see my prefix do `{prefix}prefix`. ")
-		guild_data = json.load(open(self.bot.guilds_json))
-		enabled = guild_data[str(message.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
-			if message.content.startswith('<@'):
-				for mention in message.mentions:
-					if mention == self.bot.user:
-						await message.channel.send(f"I am OpenCityBot. To see my prefix do `{prefix}prefix`. ")
+		try:
+			prefix = random.choice(self.bot.command_prefix(self.bot, message))
+			guild_data = json.load(open(self.bot.guilds_json))
+			enabled = guild_data[str(message.guild.id)]["enabled"]
+			if message.channel.type == discord.ChannelType.private or f"cogs.{self.qualified_name}" in enabled:
+				if message.content.startswith('<@'):
+					for mention in message.mentions:
+						if mention == self.bot.user:
+							await message.channel.send(f"I am OpenCityBot. To see my prefix do `{prefix}prefix`. ")
+							return
+		except AttributeError:
+			pass
 
 
 def setup(bot):
