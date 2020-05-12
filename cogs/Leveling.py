@@ -132,20 +132,23 @@ class Leveling(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
-		guild_data = json.load(open(self.bot.guilds_json))
-		enabled = guild_data[str(message.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
-			if message.author == self.bot.user:
-				return
-			if message.channel.type != discord.ChannelType.private:
-				self.get_data(message=message)
-				if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
-					user_category_1 = await self.return_user_category(message)
-					self.update_xps(message)
-					old_level, new_level = self.update_level(message)
-					await self.send_level_up_message(old_level, new_level, message)
-					await self.give_roles_according_to_level(user_category_1, message)
-					self.set_data()
+		try:
+			guild_data = json.load(open(self.bot.guilds_json))
+			enabled = guild_data[str(message.guild.id)]["enabled"]
+			if f"cogs.{self.qualified_name}" in enabled:
+				if message.author == self.bot.user:
+					return
+				if message.channel.type != discord.ChannelType.private:
+					self.get_data(message=message)
+					if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
+						user_category_1 = await self.return_user_category(message)
+						self.update_xps(message)
+						old_level, new_level = self.update_level(message)
+						await self.send_level_up_message(old_level, new_level, message)
+						await self.give_roles_according_to_level(user_category_1, message)
+						self.set_data()
+		except AttributeError:
+			pass
 
 	async def check_new_role(self, before, after):
 		new_role = next(role for role in after.roles if role not in before.roles)
