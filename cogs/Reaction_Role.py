@@ -27,19 +27,22 @@ class Reaction_Role(commands.Cog):
 		emoji_1 = payload.emoji
 		channel: discord.TextChannel = guild.get_channel(payload.channel_id)
 		user: discord.Member = guild.get_member(payload.user_id)
-		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
-		if str(guild.id) not in reaction_roles_data.keys():
-			reaction_roles_data[str(guild.id)] = {}
-			reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
-		for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
-			if str(emoji_1) == str(emoji_2):
-				role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_2)])
-				if not role:
-					await channel.send("Role not available")
-					return
-				await user.add_roles(role)
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(user.guild.id)]["enabled"]
+		if f"cogs.{self.qualified_name}" in enabled:
+			reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+			if str(guild.id) not in reaction_roles_data.keys():
+				reaction_roles_data[str(guild.id)] = {}
+				reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
+			for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
+				if str(emoji_1) == str(emoji_2):
+					role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_2)])
+					if not role:
+						await channel.send("Role not available")
+						return
+					await user.add_roles(role)
 
-		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
+			json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_remove(self, payload):
@@ -47,18 +50,21 @@ class Reaction_Role(commands.Cog):
 		emoji_1 = payload.emoji
 		channel: discord.TextChannel = guild.get_channel(payload.channel_id)
 		user: discord.Member = guild.get_member(payload.user_id)
-		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
-		if str(guild.id) not in reaction_roles_data.keys():
-			reaction_roles_data[str(guild.id)] = {}
-			reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
-		for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
-			if str(emoji_1) == str(emoji_2):
-				role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_1)])
-				if not role:
-					await channel.send("Role not available")
-					return
-				await user.remove_roles(role)
-		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(user.guild.id)]["enabled"]
+		if f"cogs.{self.qualified_name}" in enabled:
+			reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
+			if str(guild.id) not in reaction_roles_data.keys():
+				reaction_roles_data[str(guild.id)] = {}
+				reaction_roles_data[str(guild.id)]['reaction_roles'] = {}
+			for emoji_2 in reaction_roles_data[str(guild.id)]['reaction_roles'].keys():
+				if str(emoji_1) == str(emoji_2):
+					role = discord.utils.get(guild.roles, name=reaction_roles_data[str(guild.id)]['reaction_roles'][str(emoji_1)])
+					if not role:
+						await channel.send("Role not available")
+						return
+					await user.remove_roles(role)
+			json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
 	@commands.group(aliases=['rr'])
 	async def reaction_roles(self, ctx):

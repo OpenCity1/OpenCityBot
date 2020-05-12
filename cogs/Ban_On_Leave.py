@@ -23,11 +23,14 @@ class Ban_On_Leave(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_member_remove(self, member: discord.Member):
-		async for entry in member.guild.audit_logs(action=discord.AuditLogAction.kick):
-			if (datetime.datetime.utcnow() - entry.created_at).total_seconds() < 20:
-				if entry.target == member:
-					return
-		await member.ban()
+		guild_data = json.load(open(self.bot.guilds_json))
+		enabled = guild_data[str(member.guild.id)]["enabled"]
+		if f"cogs.{self.qualified_name}" in enabled:
+			async for entry in member.guild.audit_logs(action=discord.AuditLogAction.kick):
+				if (datetime.datetime.utcnow() - entry.created_at).total_seconds() < 20:
+					if entry.target == member:
+						return
+			await member.ban()
 
 
 def setup(bot):

@@ -11,7 +11,7 @@ class Configuration(commands.Cog):
 		self.bot = bot
 
 	def cog_check(self, ctx):
-		return ctx.author == ctx.guild.owner
+		return ctx.author == ctx.guild.owner or self.bot.is_owner(ctx.author)
 
 	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!", invoke_without_command=True)
 	async def prefix(self, ctx: commands.Context):
@@ -50,7 +50,7 @@ class Configuration(commands.Cog):
 			json.dump(prefix_list, file, indent='\t')
 		await ctx.send(f"Removed prefix {prefix}")
 
-	@commands.group(name="plugin", help="Shows the enabled plugins for this server!", invoke_without_command=True)
+	@commands.group(name="plugin", help="Shows the enabled plugins for this server!", invoke_without_command=True, aliases=['plugins'])
 	async def plugin(self, ctx: commands.Context):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
