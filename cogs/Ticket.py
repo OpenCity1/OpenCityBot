@@ -166,7 +166,7 @@ class Ticket(commands.Cog):
 		tickets_data = json.load(open(self.bot.tickets_json))
 		if str(ctx.guild.id) not in tickets_data:
 			tickets_data[str(ctx.guild.id)] = {}
-			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = []
+			tickets_data[str(ctx.guild.id)]['ticket_emoji'] = self.bot.ticket_emoji_default
 		embed = discord.Embed()
 		embed.title = "Available emojis for the ticket in this server!"
 		msg = ''

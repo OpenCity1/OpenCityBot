@@ -25,6 +25,7 @@ os.chdir(original_dir)
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
+TICKET_EMOJI = os.getenv('DEFAULT_TICKET_EMOJI')
 USERS_FILE = os.getenv('USERS_JSON')
 PREFIX_FILE = os.getenv('PREFIX_JSON')
 GUILD_FILE = os.getenv('GUILDS_JSON')
@@ -60,6 +61,7 @@ init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if fil
 bot = commands.Bot(command_prefix=get_prefix)
 bot.start_time = datetime.datetime.utcnow()
 bot.prefix_default = PREFIX.split(" ")
+bot.ticket_emoji_default = TICKET_EMOJI.split(" ")
 bot.users_json = USERS_FILE
 bot.prefix_json = PREFIX_FILE
 bot.guilds_json = GUILD_FILE
