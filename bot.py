@@ -1,4 +1,5 @@
 import datetime
+import io
 import json
 import logging
 import os
@@ -22,7 +23,8 @@ finally:
 		if file not in os.listdir():
 			open(file, "w").write('{\n\n}')
 os.chdir(original_dir)
-load_dotenv()
+env = io.StringIO(initial_value=open('.env', encoding='utf-8').read())
+load_dotenv(stream=env)
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
 TICKET_EMOJI = os.getenv('DEFAULT_TICKET_EMOJI')
