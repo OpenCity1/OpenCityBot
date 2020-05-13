@@ -28,6 +28,7 @@ load_dotenv(stream=env)
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
 TICKET_EMOJI = os.getenv('DEFAULT_TICKET_EMOJI')
+DELIMITER = os.getenv('DEFAULT_DELIMITER_FOR_ENV')
 USERS_FILE = os.getenv('USERS_JSON')
 PREFIX_FILE = os.getenv('PREFIX_JSON')
 GUILD_FILE = os.getenv('GUILDS_JSON')
@@ -47,7 +48,7 @@ def get_prefix(bot_1, message):
 		prefix_list = {}
 	try:
 		if str(message.guild.id) not in prefix_list.keys():
-			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(" "))}
+			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(DELIMITER))}
 	except AttributeError:
 		pass
 	with open("data/prefix.json", "w") as f:
@@ -55,15 +56,15 @@ def get_prefix(bot_1, message):
 	try:
 		return commands.when_mentioned_or(*prefix_list[str(message.guild.id)]["prefix"])(bot, message)
 	except AttributeError:
-		return commands.when_mentioned_or(*list(PREFIX.split(" ")))(bot, message)
+		return commands.when_mentioned_or(*list(PREFIX.split(DELIMITER)))(bot, message)
 
 
 init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if filename.endswith('.py')]
 
 bot = commands.Bot(command_prefix=get_prefix)
 bot.start_time = datetime.datetime.utcnow()
-bot.prefix_default = PREFIX.split(" ")
-bot.ticket_emoji_default = TICKET_EMOJI.split(" ")
+bot.prefix_default = PREFIX.split(DELIMITER)
+bot.ticket_emoji_default = TICKET_EMOJI.split(DELIMITER)
 bot.users_json = USERS_FILE
 bot.prefix_json = PREFIX_FILE
 bot.guilds_json = GUILD_FILE
