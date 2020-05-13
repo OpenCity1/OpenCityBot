@@ -10,8 +10,11 @@ class Configuration(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	def cog_check(self, ctx):
-		return ctx.author == ctx.guild.owner or self.bot.is_owner(ctx.author)
+	async def cog_check(self, ctx):
+		try:
+			return ctx.author == ctx.guild.owner or self.bot.is_owner(ctx.author)
+		except AttributeError:
+			return await self.bot.is_owner(ctx.author)
 
 	@commands.group(name="prefix", help="Gives you prefixes when sent without subcommands!", invoke_without_command=True)
 	async def prefix(self, ctx: commands.Context):
