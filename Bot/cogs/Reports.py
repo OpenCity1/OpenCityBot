@@ -3,7 +3,7 @@ import json
 import discord
 from discord.ext import commands
 
-from cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
 
 
 class Reports(commands.Cog):
