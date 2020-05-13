@@ -4,21 +4,24 @@ import json
 import logging
 import os
 import random
+from functools import partial
+from threading import Thread
 
 import discord
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
+from flask import Flask
 
 original_dir = os.getcwd()
 jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json',
          'voice_text.json']
 
 try:
-	os.listdir('data')
+	os.listdir('../data')
 except FileNotFoundError:
-	os.mkdir('data')
+	os.mkdir('../data')
 finally:
-	os.chdir('data')
+	os.chdir('../data')
 	for file in jsons:
 		if file not in os.listdir():
 			open(file, "w").write('{\n\n}')
@@ -43,7 +46,7 @@ APPLICATIONS_FILE = os.getenv('APPLICATIONS_JSON')
 
 def get_prefix(bot_1, message):
 	try:
-		prefix_list = json.load(open("data/prefix.json", "r"))
+		prefix_list = json.load(open("../data/prefix.json", "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
 	try:
@@ -51,7 +54,7 @@ def get_prefix(bot_1, message):
 			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(DELIMITER))}
 	except AttributeError:
 		pass
-	with open("data/prefix.json", "w") as f:
+	with open("../data/prefix.json", "w") as f:
 		json.dump(prefix_list, fp=f, indent='\t')
 	try:
 		return commands.when_mentioned_or(*prefix_list[str(message.guild.id)]["prefix"])(bot, message)
@@ -59,9 +62,17 @@ def get_prefix(bot_1, message):
 		return commands.when_mentioned_or(*list(PREFIX.split(DELIMITER)))(bot, message)
 
 
-init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('./cogs') if filename.endswith('.py')]
-
+init_cogs = [f'cogs.{filename[:-3]}' for filename in os.listdir('cogs') if filename.endswith('.py')]
+app = Flask(__name__)
 bot = commands.Bot(command_prefix=get_prefix)
+
+
+@app.route("/")
+def hello():
+	return "Hello from {}".format(bot.user.name)
+
+
+partial_run = partial(app.run, host="0.0.0.0", port=80, debug=True, use_reloader=False)
 bot.start_time = datetime.datetime.utcnow()
 bot.prefix_default = PREFIX.split(DELIMITER)
 bot.ticket_emoji_default = TICKET_EMOJI.split(DELIMITER)
@@ -80,7 +91,7 @@ bot.init_cogs = init_cogs
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler = logging.FileHandler(filename='../discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
@@ -130,7 +141,7 @@ async def on_ready():
 				await guild.create_role(name=role)
 
 
-for filename in os.listdir('./cogs'):
+for filename in os.listdir('cogs'):
 	if filename.endswith('.py'):
 		bot.load_extension(f'cogs.{filename[:-3]}')
 
@@ -159,15 +170,17 @@ async def add_guild_to_json():
 @bot.command()
 @commands.is_owner()
 async def reload_all_extensions(ctx):
-	for filename1 in os.listdir('./cogs'):
+	for filename1 in os.listdir('cogs'):
 		if filename1.endswith('.py'):
 			bot.unload_extension(f'cogs.{filename1[:-3]}')
 			bot.load_extension(f'cogs.{filename1[:-3]}')
 	await ctx.send("Reloaded all extensions!")
 
 
+t = Thread(target=partial_run)
+t.start()
+
 my_presence_per_day.start()
 add_guild_to_json.start()
-
 
 bot.run(TOKEN)

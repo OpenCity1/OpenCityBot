@@ -13,19 +13,19 @@ class System(commands.Cog):
 
 	@commands.command(help="Loads an extension", hidden=True)
 	async def load(self, ctx, extension):
-		os.chdir("..")
+		os.chdir("../..")
 		self.bot.load_extension(f'cogs.{extension}')
 		await ctx.send(f"Loaded {extension}")
 
 	@commands.command(help="Unloads an extension", hidden=True)
 	async def unload(self, ctx, extension):
-		os.chdir("..")
+		os.chdir("../..")
 		self.bot.unload_extension(f'cogs.{extension}')
 		await ctx.send(f"Unloaded {extension}")
 
 	@commands.command(help="Reloads an extension", hidden=True)
 	async def reload(self, ctx, extension):
-		os.chdir("..")
+		os.chdir("../..")
 		self.bot.unload_extension(f'cogs.{extension}')
 		self.bot.load_extension(f'cogs.{extension}')
 		await ctx.send(f"Reloaded {extension}")
