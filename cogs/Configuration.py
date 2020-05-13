@@ -22,9 +22,14 @@ class Configuration(commands.Cog):
 		embed = discord.Embed()
 		embed.title = "Available prefixes for this server!"
 		msg = ''
-		for index, item in enumerate(prefix_list[str(ctx.guild.id)]["prefix"]):
-			index += 1
-			msg += f"{index}. {item}\n"
+		try:
+			for index, item in enumerate(prefix_list[str(ctx.guild.id)]["prefix"]):
+				index += 1
+				msg += f"{index}. {item}\n"
+		except AttributeError:
+			for index, item in enumerate(self.bot.prefix_default):
+				index += 1
+				msg += f"{index}. {item}\n"
 		embed.description = msg
 		embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
 		await ctx.send(embed=embed)
