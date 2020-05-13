@@ -110,7 +110,7 @@ class Fun(commands.Cog):
 	async def urban(self, search):
 		pass
 
-	@commands.command()
+	@commands.command(help="Says what you sent using tts!")
 	async def echo(self, ctx, channel: Optional[discord.TextChannel] = None, *, message=None):
 		if message is not None:
 			if channel is None:
@@ -121,7 +121,7 @@ class Fun(commands.Cog):
 		else:
 			await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
 
-	@commands.group(name="convert_to")
+	@commands.group(name="convert_to", help="Converts a given string into a subcommand formatted string")
 	async def _convert_to(self, ctx: commands.Context):
 		pass
 
@@ -180,7 +180,7 @@ class Fun(commands.Cog):
 		output_string = string.translate(translation)
 		await ctx.send(output_string)
 
-	@_convert_to.command()
+	@_convert_to.command(help="Gives you a currency styled a format!")
 	async def currency_styled_text(self, ctx, *, string):
 		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
 		output_table = "₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
@@ -190,7 +190,7 @@ class Fun(commands.Cog):
 		output_string = string.translate(translation)
 		await ctx.send(output_string)
 
-	@_convert_to.command()
+	@_convert_to.command(help="Gives you a formatted old_english_styled string!")
 	async def old_english_style(self, ctx, *, string):
 		input_table = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
 		output_table = "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ1234567890~!@#$%^&*()_+{}|:\"<>?[]\;',./"
