@@ -94,7 +94,7 @@ class Information(commands.Cog):
 			title="Invite Me!",
 			color=discord.Colour.gold(),
 			description=("This is my invite link. You can use this link to add me to your server!\n"
-			             "Link can be found [here](https://discordapp.com/api/oauth2/authorize?client_id=693401671836893235&permissions=8&scope=bot)."
+			             f"Link can be found [here]({self.bot.invite_url})."
 			             )
 		)
 		await ctx.send(embed=embed)

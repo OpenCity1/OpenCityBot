@@ -41,11 +41,12 @@ REPORTS_FILE = os.getenv('REPORTS_JSON')
 TICKETS_FILE = os.getenv('TICKETS_JSON')
 REACTION_ROLES_FILE = os.getenv('REACTION_ROLES_JSON')
 APPLICATIONS_FILE = os.getenv('APPLICATIONS_JSON')
+CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
 
 
 def get_prefix(bot_1, message):
 	try:
-		prefix_list = json.load(open("data/prefix.json", "r"))
+		prefix_list = json.load(open(bot_1.prefix_json, "r"))
 	except (json.JSONDecodeError, FileNotFoundError):
 		prefix_list = {}
 	try:
@@ -53,7 +54,7 @@ def get_prefix(bot_1, message):
 			prefix_list[str(message.guild.id)] = {"prefix": list(PREFIX.split(DELIMITER))}
 	except AttributeError:
 		pass
-	with open("data/prefix.json", "w") as f:
+	with open(bot_1.prefix_json, "w") as f:
 		json.dump(prefix_list, fp=f, indent='\t')
 	try:
 		return commands.when_mentioned_or(*prefix_list[str(message.guild.id)]["prefix"])(bot, message)
@@ -71,6 +72,8 @@ def hello():
 	return "Hello from {}".format(bot.user.name)
 
 
+oauth_url = discord.utils.oauth_url(client_id=CLIENT_ID, permissions=discord.Permissions(8))
+
 bot.start_time = datetime.datetime.utcnow()
 bot.prefix_default = PREFIX.split(DELIMITER)
 bot.ticket_emoji_default = TICKET_EMOJI.split(DELIMITER)
@@ -84,6 +87,7 @@ bot.reports_json = REPORTS_FILE
 bot.tickets_json = TICKETS_FILE
 bot.applications_json = APPLICATIONS_FILE
 bot.reaction_roles_json = REACTION_ROLES_FILE
+bot.invite_url = oauth_url
 bot.start_number = 1000000000000000
 bot.init_cogs = init_cogs
 
