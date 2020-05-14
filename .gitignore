@@ -134,4 +134,4 @@ dmypy.json
 .idea/
 
 #data files
-/data/
+Bot/data/
