@@ -12,7 +12,7 @@ class Configuration(commands.Cog):
 
 	async def cog_check(self, ctx):
 		try:
-			return ctx.author == ctx.guild.owner or self.bot.is_owner(ctx.author)
+			return ctx.author == ctx.guild.owner or await self.bot.is_owner(ctx.author)
 		except AttributeError:
 			return await self.bot.is_owner(ctx.author)
 
