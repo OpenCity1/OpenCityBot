@@ -46,8 +46,18 @@ class Voice_Text_Linking(commands.Cog):
 					channel: discord.TextChannel = discord.utils.get(member.guild.text_channels, name=self.voice_text_data[str(member.guild.id)]["voice_text"][voice_channel])
 					await channel.edit(overwrites=leave_overwrites)
 					break
-		# if member.voice.channel == after.channel:
-		# 	pass
+				try:
+					if member.voice.channel == after.channel:
+						print(f"{member.name} self moved voice channel from {before.channel} to {after.channel}")
+						before_channel: discord.TextChannel = discord.utils.get(member.guild.text_channels,
+						                                                        name=self.voice_text_data[str(member.guild.id)]["voice_text"][before.channel.name])
+						after_channel: discord.TextChannel = discord.utils.get(member.guild.text_channels,
+						                                                       name=self.voice_text_data[str(member.guild.id)]["voice_text"][after.channel.name])
+						await after_channel.edit(overwrites=join_overwrites)
+						await before_channel.edit(overwrites=leave_overwrites)
+						break
+				except AttributeError:
+					pass
 
 	@commands.group(aliases=["vtl", "voice_link"])
 	async def voice_text_link(self, ctx):
