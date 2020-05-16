@@ -73,7 +73,7 @@ class Direct_Message_Support(commands.Cog):
 	async def on_member_join(self, member: discord.Member):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(member.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			if not member.bot:
 				await member.send(self.welcome_message.format(member.guild.name))
 
@@ -84,7 +84,7 @@ class Direct_Message_Support(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
 			return True
 		return False
 

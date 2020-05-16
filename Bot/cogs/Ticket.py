@@ -19,7 +19,7 @@ class Ticket(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -81,7 +81,7 @@ class Ticket(commands.Cog):
 		guild: discord.Guild = self.bot.get_guild(payload.guild_id)
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			counts = json.load(open(self.bot.counts_json))
 			if "id" not in counts.keys():
 				counts["id"] = {}

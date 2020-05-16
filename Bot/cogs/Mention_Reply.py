@@ -17,7 +17,7 @@ class Mention_Reply(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -27,7 +27,7 @@ class Mention_Reply(commands.Cog):
 			prefix = random.choice(self.bot.command_prefix(self.bot, message))
 			guild_data = json.load(open(self.bot.guilds_json))
 			enabled = guild_data[str(message.guild.id)]["enabled"]
-			if message.channel.type == discord.ChannelType.private or f"cogs.{self.qualified_name}" in enabled:
+			if message.channel.type == discord.ChannelType.private or f"Bot.cogs.{self.qualified_name}" in enabled:
 				if message.content.startswith('<@'):
 					for mention in message.mentions:
 						if mention == self.bot.user:
