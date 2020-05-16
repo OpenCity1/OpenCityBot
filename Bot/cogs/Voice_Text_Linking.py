@@ -17,7 +17,7 @@ class Voice_Text_Linking(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -25,7 +25,7 @@ class Voice_Text_Linking(commands.Cog):
 	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(member.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			join_overwrites = {
 				member.guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False, read_message_history=False),
 				member: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)

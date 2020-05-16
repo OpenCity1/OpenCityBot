@@ -17,7 +17,7 @@ class Reaction_Role(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -29,7 +29,7 @@ class Reaction_Role(commands.Cog):
 		user: discord.Member = guild.get_member(payload.user_id)
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(user.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
 			if str(guild.id) not in reaction_roles_data.keys():
 				reaction_roles_data[str(guild.id)] = {}
@@ -52,7 +52,7 @@ class Reaction_Role(commands.Cog):
 		user: discord.Member = guild.get_member(payload.user_id)
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(user.guild.id)]["enabled"]
-		if f"cogs.{self.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
 			if str(guild.id) not in reaction_roles_data.keys():
 				reaction_roles_data[str(guild.id)] = {}
