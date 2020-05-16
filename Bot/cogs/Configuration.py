@@ -4,6 +4,8 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
+from Bot.cogs.utils.checks import is_guild_owner
+
 
 class Configuration(commands.Cog):
 
@@ -12,7 +14,7 @@ class Configuration(commands.Cog):
 
 	async def cog_check(self, ctx):
 		try:
-			return ctx.author == ctx.guild.owner or await self.bot.is_owner(ctx.author)
+			return ctx.author
 		except AttributeError:
 			return await self.bot.is_owner(ctx.author)
 
@@ -35,6 +37,7 @@ class Configuration(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@prefix.command(name="set", help="Sets the prefix for a guild!", hidden=True)
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def prefix_set(self, ctx: commands.Context, prefix, index: Optional[int] = 0):
 		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"][index] = prefix
@@ -43,6 +46,7 @@ class Configuration(commands.Cog):
 		await ctx.send(f"Set prefix to {prefix}")
 
 	@prefix.command(name="add", help="Adds a prefix for a guild!", hidden=True)
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def prefix_add(self, ctx: commands.Context, prefix):
 		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
@@ -51,6 +55,7 @@ class Configuration(commands.Cog):
 		await ctx.send(f"Added prefix to {prefix}")
 
 	@prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def prefix_remove(self, ctx: commands.Context, prefix):
 		prefix_list = json.load(open(self.bot.prefix_json))
 		prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
@@ -67,17 +72,18 @@ class Configuration(commands.Cog):
 		msg = ''
 		for index, item in enumerate(enabled):
 			index += 1
-			msg += f"{index}. {item.lstrip('cogs.')}\n"
+			msg += f"{index}. {item.lstrip('Bot.').lstrip('cogs.')}\n"
 		embed.description = msg
 		embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
 		await ctx.send(embed=embed)
 
 	@plugin.command(name="enable", help="Enables given plugin!")
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def plugin_enable(self, ctx: commands.Context, plugin_ext: str):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
 		disabled = guild_data[str(ctx.guild.id)]["disabled"]
-		plugin_to_enable = f"cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
+		plugin_to_enable = f"Bot.cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
 		if plugin_to_enable in enabled:
 			await ctx.send("Plugin already enabled!")
 		else:
@@ -101,11 +107,12 @@ class Configuration(commands.Cog):
 			json.dump(guild_data, f, indent='\t')
 
 	@plugin.command(name="disable", help="Disables given plugin!")
+	@commands.check_any(is_guild_owner(), commands.is_owner())
 	async def plugin_disable(self, ctx: commands.Context, plugin_ext: str):
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
 		disabled = guild_data[str(ctx.guild.id)]["disabled"]
-		plugin_to_disable = f"cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
+		plugin_to_disable = f"Bot.cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
 		print(plugin_to_disable)
 		if plugin_to_disable in disabled:
 			await ctx.send("Plugin already disabled!")
