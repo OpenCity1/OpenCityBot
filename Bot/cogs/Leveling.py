@@ -94,7 +94,8 @@ class Leveling(commands.Cog):
 			self.file_data[str(message.guild.id)][str(message.author.id)]['level'] = new_level
 
 	def update_xps(self, message):
-		if (int(time.time()) - self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"]) > 1 and str(message.content).startswith(('!', '?')):
+		if (int(time.time()) - self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"]) > 1 and not str(message.content).startswith(
+				('!', '?', ';', ':', 'o!', 'o?')):
 			self.file_data[str(message.guild.id)][str(message.author.id)]['xps'] += random.randrange(5, 25, 5)
 			self.file_data[str(message.guild.id)][str(message.author.id)]["last_message"] = int(time.time())
 

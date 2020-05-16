@@ -45,6 +45,7 @@ class Voice_Text_Linking(commands.Cog):
 					print(f"{member.display_name} left {voice_channel1.name}")
 					channel: discord.TextChannel = discord.utils.get(member.guild.text_channels, name=self.voice_text_data[str(member.guild.id)]["voice_text"][voice_channel])
 					await channel.edit(overwrites=leave_overwrites)
+					await channel.set_permissions(member, overwrite=None)
 					break
 				try:
 					if member.voice.channel == after.channel:
