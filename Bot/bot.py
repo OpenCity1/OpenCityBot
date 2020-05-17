@@ -1,5 +1,5 @@
 import datetime
-import io
+# import io
 import json
 import logging
 import os
@@ -7,12 +7,13 @@ import random
 
 import discord
 from discord.ext import commands, tasks
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from quart import Quart
 
 original_dir = os.getcwd()
-jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'users.json',
-         'voice_text.json']
+jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'tunnels.json',
+         'users.json', 'voice_text.json']
+
 try:
 	os.listdir('data')
 except FileNotFoundError:
@@ -23,8 +24,8 @@ finally:
 		if file not in os.listdir():
 			open(file, "w").write('{\n\n}')
 os.chdir(original_dir)
-env = io.StringIO(initial_value=open('Bot/.env', encoding='utf-8').read())
-load_dotenv(stream=env)
+# env = io.StringIO(initial_value=open('Bot/.env', encoding='utf-8').read())
+# load_dotenv(stream=env)
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('DEFAULT_PREFIX')
 TICKET_EMOJI = os.getenv('DEFAULT_TICKET_EMOJI')
@@ -124,7 +125,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 
 @bot.event
 async def on_ready():
-	await bot.change_presence(status=discord.Status.idle, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
+	await bot.change_presence(status=discord.Status.invisible, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
 	# guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
 	roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
 	for guild_index, guild in enumerate(bot.guilds):
@@ -153,9 +154,10 @@ for filename in os.listdir('Bot/cogs'):
 @tasks.loop(hours=1)
 async def my_presence_per_day():
 	await bot.wait_until_ready()
-	status = random.choice([discord.Status.idle, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.dnd, discord.Status.invisible])
-	await bot.change_presence(status=status, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
-	print("changed")
+	status = random.choice([discord.Status.invisible, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.idle, discord.Status.dnd])
+	activity = random.choice([discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"),
+	                          discord.Streaming(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started", url="https://www.twitch.tv/opencitybotdiscord")])
+	await bot.change_presence(status=status, activity=activity)
 
 
 @tasks.loop(seconds=15)

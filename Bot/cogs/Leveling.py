@@ -15,7 +15,7 @@ from Bot.cogs.utils.permision_builder import permission_builder
 class Leveling(commands.Cog):
 	def __init__(self, bot):
 		self.bot: commands.Bot = bot
-		self.xps_level = [0, 55, 195, 255, 365, 655, 965, 1225, 2565, 3655, 9665]
+		self.xps_level = [0, 195, 255, 365, 655, 965, 1225, 2565, 3655, 6585, 9665]
 
 		self.leveling_prefix = ['Pl. ', 'New ', 'Very Tiny ', 'Tiny ', 'Small ', '', 'Big ', 'Huge ', 'Very Huge ', 'Old ', 'Fl. ']
 		self.leveling_roles = {'admin': ['Administrators', []], 'mod': ['Moderators', []], 'citizen': ['OpenCitizens', []]}
@@ -89,14 +89,11 @@ class Leveling(commands.Cog):
 			self.leveling_data[str(message.guild.id)][str(message.author.id)]["last_message"] = int(time.time())
 
 	async def return_user_category(self, message):
-		prefix = random.choice(self.bot.command_prefix(self.bot, message))
 		user_category = None
 		for i in self.leveling_roles:
 			if discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles[i][0], message.guild.roles) in message.author.roles:
 				user_category = i
 				break
-		else:
-			await message.channel.send(f"{message.guild.owner.mention} Please create roles using `{prefix}create_roles`")
 		if user_category is None:
 			try:
 				await message.author.add_roles(discord.utils.find(lambda r: r.name == self.leveling_prefix[0] + self.leveling_roles['citizen'][0], message.guild.roles))
