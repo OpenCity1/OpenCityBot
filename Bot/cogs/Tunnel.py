@@ -26,7 +26,7 @@ class Tunnel(commands.Cog):
 		pass
 
 	@tunnel.command(name="new")
-	async def tunnel_new(self, ctx: commands.Context, reason: str, user: discord.Member):
+	async def tunnel_new(self, ctx: commands.Context, user: discord.Member, reason: str):
 		counts = json.load(open(self.bot.counts_json))
 		if "id" not in counts.keys():
 			counts["id"] = {}
