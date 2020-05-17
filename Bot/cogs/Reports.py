@@ -86,7 +86,7 @@ class Reports(commands.Cog):
 					f"**Reported by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {report['reportAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_green()
 				embed.set_footer(text=f"ReportID: {report['reportID']} | {report['reportTime']}")
@@ -111,7 +111,7 @@ class Reports(commands.Cog):
 					f"**Reported by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {report['reportAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_red()
 				embed.set_footer(text=f"ReportID: {report['reportID']} | {report['reportTime']}")

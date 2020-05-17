@@ -82,7 +82,7 @@ class Suggestions(commands.Cog):
 					f"**Suggested by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_green()
 				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
@@ -105,7 +105,7 @@ class Suggestions(commands.Cog):
 					f"**Suggested by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.blue()
 				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
@@ -129,7 +129,7 @@ class Suggestions(commands.Cog):
 					f"**Suggested by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour.dark_red()
 				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
@@ -152,7 +152,7 @@ class Suggestions(commands.Cog):
 					f"**Suggested by**: {author.mention}"
 				)
 				if reason:
-					embed.add_field(name=f"Reason by {suggestion['suggestionAuthor'].split(' ')[0]}", value=reason)
+					embed.add_field(name=f"Reason by {f'{ctx.author.name}#{ctx.author.discriminator}'}", value=reason)
 				embed.set_author(name=author.name, icon_url=author.avatar_url)
 				embed.colour = discord.Colour(0x00ffff)
 				embed.set_footer(text=f"SuggestionID: {suggestion['suggestionID']} | {suggestion['suggestionTime']}")
