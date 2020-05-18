@@ -5,7 +5,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import indian_standard_time_now
 
 
 class Ticket(commands.Cog):
@@ -19,7 +19,7 @@ class Ticket(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -50,7 +50,7 @@ class Ticket(commands.Cog):
 			title=f"Thank you for creating a ticket! {ctx.author.name} This is Ticket #{counts[str(ctx.guild.id)]['ticket_number']}",
 			description=f"Thank you for creating a ticket! {ctx.author.mention}\nWe'll get back to you as soon as possible.",
 		)
-		embed.set_footer(text=f"TicketID: {counts['id']['ticket_id']} | {get_date_from_short_form_and_unix_time()[1]}")
+		embed.set_footer(text=f"TicketID: {counts['id']['ticket_id']} | {indian_standard_time_now()[1]}")
 		if discord.utils.get(ctx.guild.categories, name="Support") not in ctx.guild.categories:
 			await ctx.guild.create_category(name="Support")
 		channel = await ctx.guild.create_text_channel(name=f'{ctx.author.name}-{ctx.author.discriminator}', category=discord.utils.get(ctx.guild.categories, name="Support"),
@@ -64,7 +64,7 @@ class Ticket(commands.Cog):
 		ticket_1 = {
 			"ticketID": counts['id']["ticket_id"],
 			"ticketAuthor": f"{ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id})",
-			"ticketOpenedTime": get_date_from_short_form_and_unix_time()[1],
+			"ticketOpenedTime": indian_standard_time_now()[1],
 			"ticketClosedTime": "Not closed till now!",
 			"ticketGuildID": f"{ctx.guild.id}",
 			"ticketReason": f"{reason}",
@@ -109,7 +109,7 @@ class Ticket(commands.Cog):
 				title=f"Thank you for creating a ticket! {user.name} This is Ticket #{counts[str(guild.id)]['ticket_number']}",
 				description=f"Thank you for creating a ticket! {user.mention}\nWe'll get back to you as soon as possible.",
 			)
-			embed.set_footer(text=f"TicketID: {counts['id']['ticket_id']} | {get_date_from_short_form_and_unix_time()[1]}")
+			embed.set_footer(text=f"TicketID: {counts['id']['ticket_id']} | {indian_standard_time_now()[1]}")
 			for emoji_2 in tickets_data[str(guild.id)]['ticket_emoji']:
 				if str(emoji) == str(emoji_2):
 					if discord.utils.get(guild.categories, name="Support") not in guild.categories:
@@ -125,7 +125,7 @@ class Ticket(commands.Cog):
 				ticket_1 = {
 					"ticketID": counts['id']["ticket_id"],
 					"ticketAuthor": f"{user.name}#{user.discriminator} ({user.id})",
-					"ticketOpenedTime": get_date_from_short_form_and_unix_time()[1],
+					"ticketOpenedTime": indian_standard_time_now()[1],
 					"ticketClosedTime": "Not closed till now!",
 					"ticketGuildID": f"{guild.id}",
 					"ticketReason": "No Reason given (Ticket opened using emoji)",
@@ -158,7 +158,7 @@ class Ticket(commands.Cog):
 					file1.close()
 					await ctx.channel.delete()
 					ticket['ticketStatus'] = 'closed'
-					ticket['ticketClosedTime'] = get_date_from_short_form_and_unix_time()[1]
+					ticket['ticketClosedTime'] = indian_standard_time_now()[1]
 		json.dump(tickets_data, open(self.bot.tickets_json, 'w'), indent='\t')
 
 	@ticket.group(name="emoji")

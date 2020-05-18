@@ -4,7 +4,7 @@ from io import BytesIO
 import discord
 from discord.ext import commands
 
-from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import indian_standard_time_now
 
 
 class Tunnel(commands.Cog):
@@ -45,7 +45,7 @@ class Tunnel(commands.Cog):
 			title=f"Thank you for creating a tunnel! {ctx.author.name} This is Tunnel #{counts[str(ctx.guild.id)]['tunnel_number']}",
 			description=f"Thank you for creating a tunnel! {ctx.author.mention}\nWe'll get back to you as soon as possible.",
 		)
-		embed.set_footer(text=f"TunnelID: {counts['id']['tunnel_id']} | {get_date_from_short_form_and_unix_time()[1]}")
+		embed.set_footer(text=f"TunnelID: {counts['id']['tunnel_id']} | {indian_standard_time_now()[1]}")
 		if discord.utils.get(ctx.guild.categories, name="Tunnels") not in ctx.guild.categories:
 			await ctx.guild.create_category(name="Tunnels")
 		channel = await ctx.guild.create_text_channel(name=f'{ctx.author.name}-{ctx.author.discriminator}-----{user.name}-{user.discriminator}',
@@ -61,7 +61,7 @@ class Tunnel(commands.Cog):
 		tunnel_1 = {
 			"tunnelID": counts['id']["tunnel_id"],
 			"tunnelAuthor": f"{str(ctx.author.name).replace(' ', '-')}#{ctx.author.discriminator} ({ctx.author.id})",
-			"tunnelOpenedTime": get_date_from_short_form_and_unix_time()[1],
+			"tunnelOpenedTime": indian_standard_time_now()[1],
 			"tunnelClosedTime": "Not closed till now!",
 			"tunnelGuildID": f"{ctx.guild.id}",
 			"tunnelReason": f"{reason}",
@@ -74,8 +74,8 @@ class Tunnel(commands.Cog):
 		json.dump(counts, open(self.bot.counts_json, "w"), indent='\t')
 		json.dump(tunnels_data, open(self.bot.tunnels_json, 'w'), indent='\t')
 
-	@commands.command(name="close")
-	async def close(self, ctx: commands.Context, tunnel_id):
+	@tunnel.command(name="close")
+	async def tunnel_close(self, ctx: commands.Context, tunnel_id):
 		tunnels_data = json.load(open(self.bot.tunnels_json))
 		transcripts = None
 		for tunnel in tunnels_data['tunnels']:
@@ -95,7 +95,7 @@ class Tunnel(commands.Cog):
 					file1.close()
 					await ctx.channel.delete()
 					tunnel['tunnelStatus'] = 'closed'
-					tunnel['tunnelClosedTime'] = get_date_from_short_form_and_unix_time()[1]
+					tunnel['tunnelClosedTime'] = indian_standard_time_now()[1]
 		json.dump(tunnels_data, open(self.bot.tunnels_json, 'w'), indent='\t')
 
 

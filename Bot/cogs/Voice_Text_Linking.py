@@ -17,7 +17,7 @@ class Voice_Text_Linking(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -37,19 +37,19 @@ class Voice_Text_Linking(commands.Cog):
 			for voice_channel in self.voice_text_data[str(member.guild.id)]["voice_text"].keys():
 				voice_channel1 = discord.utils.get(member.guild.voice_channels, name=voice_channel)
 				if after.channel == voice_channel1 and before.channel is None:
-					print(f"{member.display_name} joined {voice_channel1.name}")
+					print(f"{member.display_name} joined the voice channel {voice_channel1.name}")
 					channel: discord.TextChannel = discord.utils.get(member.guild.text_channels, name=self.voice_text_data[str(member.guild.id)]["voice_text"][voice_channel])
 					await channel.edit(overwrites=join_overwrites)
 					break
 				if after.channel is None and before.channel == voice_channel1:
-					print(f"{member.display_name} left {voice_channel1.name}")
+					print(f"{member.display_name} left the voice channel {voice_channel1.name}")
 					channel: discord.TextChannel = discord.utils.get(member.guild.text_channels, name=self.voice_text_data[str(member.guild.id)]["voice_text"][voice_channel])
 					await channel.edit(overwrites=leave_overwrites)
 					await channel.set_permissions(member, overwrite=None)
 					break
 				try:
 					if member.voice.channel == after.channel:
-						print(f"{member.name} self moved voice channel from {before.channel} to {after.channel}")
+						print(f"{member.name} switched the voice channel from {before.channel} to {after.channel}")
 						before_channel: discord.TextChannel = discord.utils.get(member.guild.text_channels,
 						                                                        name=self.voice_text_data[str(member.guild.id)]["voice_text"][before.channel.name])
 						after_channel: discord.TextChannel = discord.utils.get(member.guild.text_channels,
