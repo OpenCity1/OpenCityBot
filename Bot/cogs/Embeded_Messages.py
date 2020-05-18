@@ -4,7 +4,7 @@ import re
 import discord
 from discord.ext import commands
 
-from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import indian_standard_time_now
 
 
 class Embeded_Messages(commands.Cog):
@@ -19,7 +19,7 @@ class Embeded_Messages(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -30,7 +30,7 @@ class Embeded_Messages(commands.Cog):
 		embed.colour = discord.Colour.dark_green()
 		embed.set_author(name=f"{re.sub('[0-9]', '', str(ctx.author.name))}", icon_url=f"{ctx.author.avatar_url}")
 		embed.description = "Trying to find something!"
-		embed.set_footer(text=f"{ctx.guild.name} | {get_date_from_short_form_and_unix_time()[1]}", icon_url=f"{ctx.guild.icon_url}")
+		embed.set_footer(text=f"{ctx.guild.name} | {indian_standard_time_now()[1]}", icon_url=f"{ctx.guild.icon_url}")
 		await ctx.send(embed=embed)
 
 

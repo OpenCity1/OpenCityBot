@@ -3,7 +3,7 @@ import json
 import discord
 from discord.ext import commands
 
-from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import indian_standard_time_now
 
 
 class Reports(commands.Cog):
@@ -18,7 +18,7 @@ class Reports(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -43,7 +43,7 @@ class Reports(commands.Cog):
 			),
 			color=discord.Colour.blurple()
 		)
-		embed.set_footer(text=f"""ReportID: {counts["id"]["report_id"]} | {get_date_from_short_form_and_unix_time()[1]}""")
+		embed.set_footer(text=f"""ReportID: {counts["id"]["report_id"]} | {indian_standard_time_now()[1]}""")
 		embed.set_author(name=f"{ctx.author.name}", icon_url=f"{ctx.author.avatar_url}")
 		message_sent = await ctx.send(embed=embed)
 		await message_sent.add_reaction(f":_tick:705003237174018179")
@@ -58,7 +58,7 @@ class Reports(commands.Cog):
 			"reportTitle": title,
 			"reportReason": reason,
 			"reportAuthor": f"{ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id})",
-			"reportTime": get_date_from_short_form_and_unix_time()[1],
+			"reportTime": indian_standard_time_now()[1],
 			"reportStatus": "waiting",
 			"reportUser": f"{user.name}#{user.discriminator} ({user.id})"
 		}

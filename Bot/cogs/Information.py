@@ -5,6 +5,8 @@ from typing import List, Mapping, Optional
 import discord
 from discord.ext import commands
 
+from Bot.cogs.utils.timeformat_bot import convert_utc_into_ist
+
 
 class MyHelpCommand(commands.HelpCommand):
 	def __init__(self, **options):
@@ -62,7 +64,7 @@ class MyHelpCommand(commands.HelpCommand):
 class Information(commands.Cog):
 
 	def __init__(self, bot):
-		self.bot = bot
+		self.bot: commands.Bot = bot
 		self._original_help_command = bot.help_command
 		bot.help_command = MyHelpCommand()
 		bot.help_command.cog = self
@@ -77,7 +79,7 @@ class Information(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -106,6 +108,28 @@ class Information(commands.Cog):
 		minutes, seconds = divmod(remainder, 60)
 		days, hours = divmod(hours, 24)
 		await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
+
+	@commands.command()
+	async def user_info(self, ctx: commands.Context, member: discord.Member = None):
+		member = ctx.author if member is None else member
+
+		embed = discord.Embed()
+		embed.set_author(name=member.display_name, icon_url=member.avatar_url)
+		embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+		embed.title = f"Info of {member.display_name}"
+		embed.add_field(name="Name", value=member.display_name)
+		embed.add_field(name="ID", value=member.id)
+		embed.add_field(name="Created at", value=convert_utc_into_ist(member.created_at))
+		embed.add_field(name="Joined at", value=convert_utc_into_ist(member.joined_at))
+		embed.add_field(name="Roles", value="".join(list(reversed([role.mention for role in member.roles if not role.mention == f'<@&{member.guild.id}>']))), inline=False)
+		embed.add_field(name="Avatar URL", value=member.avatar_url)
+
+		await ctx.send(embed=embed)
+
+	@commands.command()
+	async def create_guild(self, ctx, guild_name):
+		guild = await self.bot.create_guild(name=guild_name)
+		await ctx.send(f"Created guild: {guild.name}")
 
 
 def setup(bot):

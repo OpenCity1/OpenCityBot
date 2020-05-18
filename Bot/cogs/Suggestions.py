@@ -4,7 +4,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from Bot.cogs.utils.timeformat_bot import get_date_from_short_form_and_unix_time
+from Bot.cogs.utils.timeformat_bot import indian_standard_time_now
 
 
 class Suggestions(commands.Cog):
@@ -19,7 +19,7 @@ class Suggestions(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -42,7 +42,7 @@ class Suggestions(commands.Cog):
 				f"**Suggestion by**: {ctx.author.mention}"
 			),
 			color=discord.Colour.green()
-		).set_footer(text=f"SuggestionID: {counts['id']['suggestion_id']} | {get_date_from_short_form_and_unix_time()[1]}")
+		).set_footer(text=f"SuggestionID: {counts['id']['suggestion_id']} | {indian_standard_time_now()[1]}")
 		embed.set_author(name=f"{ctx.author.name}", icon_url=f"{ctx.author.avatar_url}")
 		message_sent = await ctx.send(embed=embed)
 		await message_sent.add_reaction(f":_tick:705003237174018179")
@@ -58,7 +58,7 @@ class Suggestions(commands.Cog):
 			"suggestionTitle": title,
 			"suggestionContent": suggestion,
 			"suggestionAuthor": f"{ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id})",
-			"suggestionTime": get_date_from_short_form_and_unix_time()[1],
+			"suggestionTime": indian_standard_time_now()[1],
 			"suggestionType": f"{type1}",
 			"suggestionStatus": "waiting"
 		}

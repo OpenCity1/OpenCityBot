@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+from itertools import cycle
 
 import discord
 from discord.ext import commands, tasks
@@ -125,7 +126,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 
 @bot.event
 async def on_ready():
-	await bot.change_presence(status=discord.Status.invisible, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
+	await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
 	# guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
 	roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
 	for guild_index, guild in enumerate(bot.guilds):
@@ -141,9 +142,9 @@ async def on_ready():
 
 		role_names = [role.name for role in guild.roles]
 
-		for role in roles_needed:
-			if role not in role_names:
-				await guild.create_role(name=role)
+	# for role in roles_needed:
+	# 	if role not in role_names:
+	# 		await guild.create_role(name=role)
 
 
 for filename in os.listdir('Bot/cogs'):
@@ -154,9 +155,11 @@ for filename in os.listdir('Bot/cogs'):
 @tasks.loop(hours=1)
 async def my_presence_per_day():
 	await bot.wait_until_ready()
-	status = random.choice([discord.Status.invisible, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.idle, discord.Status.dnd])
-	activity = random.choice([discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"),
-	                          discord.Streaming(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started", url="https://www.twitch.tv/opencitybotdiscord")])
+	statuses = cycle([discord.Status.invisible, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.idle, discord.Status.dnd])
+	activities = cycle([discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"),
+	                    discord.Streaming(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started", url="https://www.twitch.tv/opencitybotdiscord")])
+	status = next(statuses)
+	activity = next(activities)
 	await bot.change_presence(status=status, activity=activity)
 
 
@@ -185,6 +188,14 @@ async def reload_all_extensions(ctx):
 
 my_presence_per_day.start()
 add_guild_to_json.start()
+
+# @bot.command()
+# async def guild_create(ctx):
+# 	guild: discord.Guild = bot.get_guild(711869134874607688)
+# 	channel: discord.TextChannel = await guild.create_text_channel(name="Somehow-ok")
+# 	invite = await channel.create_invite()
+# 	await ctx.send(invite.url)
+
 
 bot.loop.create_task(app.run_task(host=HOST_NUMBER, port=int(PORT_NUMBER), debug=True))
 bot.run(TOKEN)

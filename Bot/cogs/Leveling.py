@@ -39,7 +39,7 @@ class Leveling(commands.Cog):
 			return True
 		guild_data = json.load(open(self.bot.guilds_json))
 		enabled = guild_data[str(ctx.guild.id)]["enabled"]
-		if f"Bot.cogs.{ctx.cog.qualified_name}" in enabled:
+		if f"Bot.cogs.{self.qualified_name}" in enabled:
 			return True
 		return False
 
@@ -50,6 +50,12 @@ class Leveling(commands.Cog):
 				self.leveling_data[str(member.guild.id)] = {}
 			if str(member.id) not in self.leveling_data[str(member.guild.id)].keys():
 				self.leveling_data[str(member.guild.id)][str(member.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
+
+	def update_data(self, member):
+		if str(member.guild.id) not in self.leveling_data.keys():
+			self.leveling_data[str(member.guild.id)] = {}
+		if str(member.id) not in self.leveling_data[str(member.guild.id)].keys():
+			self.leveling_data[str(member.guild.id)][str(member.id)] = {'xps': 0, 'level': 0, 'last_message': 0}
 
 	def set_data(self):
 		with open(self.bot.users_json, "w+") as file:
@@ -122,6 +128,7 @@ class Leveling(commands.Cog):
 					self.get_data(member=message.author)
 					if discord.utils.find(lambda r: r.name == 'Respected People', message.guild.roles) not in message.author.roles and message.author.bot is False:
 						user_category_1 = await self.return_user_category(message)
+						self.update_data(message.author)
 						self.update_xps(message)
 						old_level, new_level = self.update_level(message)
 						await self.send_level_up_message(old_level, new_level, message)
