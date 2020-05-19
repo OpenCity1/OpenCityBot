@@ -23,11 +23,11 @@ class Ticket(commands.Cog):
 			return True
 		return False
 
-	@commands.group()
+	@commands.group(help="Does nothing when send without subcommands")
 	async def ticket(self, ctx: commands.Context):
 		pass
 
-	@ticket.command(name="new")
+	@ticket.command(name="new", help="Creates a new ticket!")
 	async def ticket_new(self, ctx: commands.Context, *, reason: Optional[str]):
 		counts = json.load(open(self.bot.counts_json))
 		if "id" not in counts.keys():

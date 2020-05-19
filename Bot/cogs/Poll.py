@@ -20,7 +20,7 @@ class Poll(commands.Cog):
 			return True
 		return False
 
-	@commands.command()
+	@commands.command(help="Creates a polls with a question and answer.")
 	async def polls(self, ctx: commands.Context, *, q_and_a):
 		question = str(q_and_a).split(", " if ", " in q_and_a else "| ")[0]
 		answers = str(q_and_a).split(", " if ", " in q_and_a else "| ")[1:]
