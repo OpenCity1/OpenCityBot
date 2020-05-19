@@ -66,7 +66,7 @@ class Reaction_Role(commands.Cog):
 					await user.remove_roles(role)
 			json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
-	@commands.group(aliases=['rr'])
+	@commands.group(aliases=['rr'], help="Shows the reaction roles.")
 	async def reaction_roles(self, ctx):
 		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
 		if str(ctx.guild.id) not in reaction_roles_data.keys():
@@ -83,7 +83,7 @@ class Reaction_Role(commands.Cog):
 		await ctx.send(embed=embed)
 		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
-	@reaction_roles.command(name="add")
+	@reaction_roles.command(name="add", usage="<emoji> <role>", help="Creates a reaction role.")
 	async def rr_add(self, ctx, emoji_2, role_1):
 		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
 		if str(ctx.guild.id) not in reaction_roles_data.keys():
@@ -105,7 +105,7 @@ class Reaction_Role(commands.Cog):
 					reaction_roles_data[str(ctx.guild.id)]['reaction_roles'][str(emoji_2)] = role.name
 		json.dump(reaction_roles_data, open(self.bot.reaction_roles_json, 'w'), indent='\t')
 
-	@reaction_roles.command(name="remove")
+	@reaction_roles.command(name="remove", usage="<emoji> <role>", help="Deletes a reaction role.")
 	async def rr_remove(self, ctx, emoji_2):
 		reaction_roles_data = json.load(open(self.bot.reaction_roles_json, encoding="utf-8"))
 		if str(ctx.guild.id) not in reaction_roles_data.keys():

@@ -21,11 +21,11 @@ class Tunnel(commands.Cog):
 			return True
 		return False
 
-	@commands.group()
+	@commands.group(help="Does nothing when invoked without subcommand!")
 	async def tunnel(self, ctx: commands.Context):
 		pass
 
-	@tunnel.command(name="new")
+	@tunnel.command(name="new", help="Creates a new tunnel!")
 	async def tunnel_new(self, ctx: commands.Context, user: discord.Member, reason: str):
 		counts = json.load(open(self.bot.counts_json))
 		if "id" not in counts.keys():
@@ -74,7 +74,7 @@ class Tunnel(commands.Cog):
 		json.dump(counts, open(self.bot.counts_json, "w"), indent='\t')
 		json.dump(tunnels_data, open(self.bot.tunnels_json, 'w'), indent='\t')
 
-	@tunnel.command(name="close")
+	@tunnel.command(name="close", help="Closes a active tunnel!")
 	async def tunnel_close(self, ctx: commands.Context, tunnel_id):
 		tunnels_data = json.load(open(self.bot.tunnels_json))
 		transcripts = None

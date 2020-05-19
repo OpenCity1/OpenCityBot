@@ -51,7 +51,7 @@ class MyHelpCommand(commands.HelpCommand):
 		embed = discord.Embed()
 		embed.colour = discord.Colour.dark_orange()
 		embed.title = group.qualified_name
-		embed.description = f"Usage: `{self.get_command_signature(group)}`\nAliases: {' | '.join([f'`{alias}`' for alias in group.aliases]) if group.aliases else f'`{group.name}`'}"
+		embed.description = f"Usage: `{self.get_command_signature(group)}`\nAliases: {' | '.join([f'`{alias}`' for alias in group.aliases]) if group.aliases else f'`{group.name}`'}\nHelp: {group.help}"
 		embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
 		for command in group.commands:
 			embed.add_field(name=command.name, value=command.help)
@@ -109,7 +109,7 @@ class Information(commands.Cog):
 		days, hours = divmod(hours, 24)
 		await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
 
-	@commands.command()
+	@commands.command(help="Gives a the info of a user.")
 	async def user_info(self, ctx: commands.Context, member: discord.Member = None):
 		member = ctx.author if member is None else member
 
@@ -119,8 +119,8 @@ class Information(commands.Cog):
 		embed.title = f"Info of {member.display_name}"
 		embed.add_field(name="Name", value=member.display_name)
 		embed.add_field(name="ID", value=member.id)
-		embed.add_field(name="Created at", value=convert_utc_into_ist(member.created_at))
-		embed.add_field(name="Joined at", value=convert_utc_into_ist(member.joined_at))
+		embed.add_field(name="Created at", value=convert_utc_into_ist(member.created_at)[1])
+		embed.add_field(name="Joined at", value=convert_utc_into_ist(member.joined_at)[1])
 		embed.add_field(name="Roles", value="".join(list(reversed([role.mention for role in member.roles if not role.mention == f'<@&{member.guild.id}>']))), inline=False)
 		embed.add_field(name="Avatar URL", value=member.avatar_url)
 
