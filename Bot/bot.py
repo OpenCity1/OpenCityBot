@@ -20,9 +20,8 @@ try:
 except FileNotFoundError:
     os.mkdir('data')
 finally:
-    os.chdir('data')
     for file in jsons:
-        if file not in os.listdir(''):
+        if file not in os.listdir('data'):
             open(file, "w").write('{\n\n}')
 os.chdir(original_dir)
 # env = io.StringIO(initial_value=open('Bot/.env', encoding='utf-8').read())
@@ -128,7 +127,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 async def on_ready():
     await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"))
     # guild = discord.utils.get(client.guildTry .helps, id=GUILD_ID)
-    roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
+    # roles_needed = ["Muted Members", "Banned Members", "Kicked Members"]
     for guild_index, guild in enumerate(bot.guilds):
         print(
             f'{bot.user} is connected to the following guild:\n'
@@ -140,7 +139,7 @@ async def on_ready():
         if guild_index != (len(bot.guilds) - 1):
             print('\n\n\n', end="")
 
-        role_names = [role.name for role in guild.roles]
+        # role_names = [role.name for role in guild.roles]
 
 # for role in roles_needed:
 # 	if role not in role_names:
