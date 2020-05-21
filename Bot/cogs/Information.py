@@ -123,9 +123,46 @@ class Information(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(help="Gives a the info of a guild.")
+    async def guild_info(self, ctx: commands.Context):
+        online_members = 0
+        offline_members = 0
+        idle_members = 0
+        dnd_members = 0
+
+        guild: discord.Guild = ctx.guild
+        members = guild.members
+        for member in members:
+            print(member.status)
+            if member.status is discord.Status.online:
+                online_members += 1
+            if member.status is discord.Status.offline:
+                offline_members += 1
+            if member.status is discord.Status.idle:
+                idle_members += 1
+            if member.status is discord.Status.dnd:
+                dnd_members += 1
+
+        embed = discord.Embed()
+        embed.set_author(name=guild.name, icon_url=guild.icon_url)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.title = f"Info of {guild.name}"
+        embed.add_field(name="Name", value=guild.name)
+        embed.add_field(name="ID", value=guild.id)
+        embed.add_field(name="Created at", value=convert_utc_into_ist(guild.created_at)[1])
+        embed.add_field(name="Channels available",
+                        value=f"<:channel:713041608379203687> {len(guild.text_channels)} \n<:voice:713041608312094731> {len(guild.voice_channels)}\n <:news:713041608559427624> {len([channel for channel in guild.text_channels if channel.is_news()])}")
+        embed.add_field(name="Members count with status",
+                        value=f"<:online:713029272125833337> {online_members}\n <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \n <:dnd:713029270489792533> {dnd_members}")
+        embed.add_field(name="Roles", value="".join(list(reversed([role.mention for role in guild.roles if not role.mention == f'<@&{guild.id}>']))[:20]), inline=False)
+        embed.add_field(name="Guild Icon URL", value="This server has no icon url" if not bool(guild.icon_url) else guild.icon_url)
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def create_guild(self, ctx, guild_name):
         guild = await self.bot.create_guild(name=guild_name)
+        text_channel: discord.TextChannel = discord.utils.get(guild.text_channels, name="general")
+        invite = text_channel.create_invite()
         await ctx.send(f"Created guild: {guild.name}")
 
 
