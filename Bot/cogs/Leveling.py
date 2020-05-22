@@ -352,6 +352,30 @@ class Leveling(commands.Cog):
         self.set_data()
         await ctx.send(f"Removed level {level} to {ctx.author.mention if member == None else member.mention}")
 
+    def get_leader_board(self, guild_id, how_to_sort):
+        leader_board1 = {str(guild_id): dict(sorted(self.leveling_data[str(guild_id)].items(), key=lambda items: items[1][how_to_sort], reverse=True))}
+        return list(leader_board1[str(guild_id)].items())
+
+    @commands.command(name="leaderboard", aliases=['lb'])
+    async def leader_board(self, ctx):
+        leaderboard = self.get_leader_board(ctx.guild.id, 'level')
+        msg = ''
+        index = 1
+        for user_id, user_value in leaderboard:
+            user = discord.utils.get(ctx.guild.members, id=int(user_id))
+            if user is not None:
+                if not user.bot:
+                    msg += f"{index}. {user.mention} -> {user_value['level']}\n"
+                    index += 1
+            else:
+                print(f'user not found in index {index - 1}')
+        embed = discord.Embed()
+        embed.title = f"Leaderboard for {ctx.guild.name}"
+        embed.description = msg
+        embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Leveling(bot))

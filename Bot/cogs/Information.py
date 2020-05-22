@@ -131,9 +131,7 @@ class Information(commands.Cog):
         dnd_members = 0
 
         guild: discord.Guild = ctx.guild
-        members = guild.members
-        for member in members:
-            print(member.status)
+        for member in guild.members:
             if member.status is discord.Status.online:
                 online_members += 1
             if member.status is discord.Status.offline:
@@ -149,7 +147,7 @@ class Information(commands.Cog):
         embed.title = f"Info of {guild.name}"
         embed.add_field(name="Name", value=guild.name)
         embed.add_field(name="ID", value=guild.id)
-        embed.add_field(name="Created at", value=convert_utc_into_ist(guild.created_at)[1])
+        embed.add_field(name="Created at", value=convert_utc_into_ist(guild.created_at)[1], inline=False)
         embed.add_field(name="Channels available",
                         value=f"<:channel:713041608379203687> {len(guild.text_channels)} \n<:voice:713041608312094731> {len(guild.voice_channels)}\n <:news:713041608559427624> {len([channel for channel in guild.text_channels if channel.is_news()])}")
         embed.add_field(name="Members count with status",
@@ -161,9 +159,9 @@ class Information(commands.Cog):
     @commands.command()
     async def create_guild(self, ctx, guild_name):
         guild = await self.bot.create_guild(name=guild_name)
-        text_channel: discord.TextChannel = discord.utils.get(guild.text_channels, name="general")
-        invite = text_channel.create_invite()
-        await ctx.send(f"Created guild: {guild.name}")
+        text_channel = discord.utils.get(guild.text_channels, name="general")
+        invite = await text_channel.create_invite()
+        await ctx.send(f"Created guild: {guild.name} with invite {invite.url}")
 
 
 def setup(bot):
