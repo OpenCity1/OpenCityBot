@@ -113,7 +113,7 @@ class Configuration(commands.Cog):
         enabled = guild_data[str(ctx.guild.id)]["enabled"]
         disabled = guild_data[str(ctx.guild.id)]["disabled"]
         plugin_to_disable = f"Bot.cogs.{plugin_ext.replace('_', ' ').title().replace(' ', '_')}"
-        print(plugin_to_disable)
+        # print(plugin_to_disable)
         if plugin_to_disable in disabled:
             await ctx.send("Plugin already disabled!")
         else:
