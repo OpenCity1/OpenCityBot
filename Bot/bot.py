@@ -12,8 +12,8 @@ from discord.ext import commands, tasks
 from quart import Quart
 
 original_dir = os.getcwd()
-jsons = ['applications.json', 'counts.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json', 'tunnels.json',
-         'users.json', 'voice_text.json']
+jsons = ['applications.json', 'counts.json', 'economy.json', 'guilds_data.json', 'prefix.json', 'reaction_roles.json', 'reports.json', 'suggestions.json', 'tickets.json',
+         'tunnels.json', 'users.json', 'voice_text.json']
 
 try:
     os.listdir('data')
