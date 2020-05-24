@@ -84,30 +84,31 @@ class Direct_Message_Support(commands.Cog):
                 await ctx.send(f"You took to long to respond {ctx.author.mention}")
                 break
             else:
-                if ctx.channel.type == discord.ChannelType.private:
-                    pass
-                if int(response_by_user.content) in self.response_dict.keys():
-                    async with ctx.channel.typing():
-                        try:
+                try:
+                    if ctx.channel.type == discord.ChannelType.private:
+                        pass
+                    if int(response_by_user.content) in self.response_dict.keys():
+                        async with ctx.channel.typing():
                             await ctx.send(f"{self.response_dict[int(response_by_user.content)]} {ctx.author.mention}".replace('    ', '').strip())
-                        except ValueError:
-                            await ctx.send(f"You sent a wrong message! {ctx.author.mention}")
-                elif int(response_by_user.content) == 0:
-                    async with ctx.channel.typing():
-                        await ctx.send(f"Great! You found a bug!! {ctx.author.mention}")
-                elif len(self.response_dict.keys()) < int(response_by_user.content) <= 20:
-                    async with ctx.channel.typing():
-                        await ctx.send(f"Sorry, we just have {len(self.response_dict.keys())} questions as FAQ. More will be added. {ctx.author.mention}")
-                elif 20 < int(response_by_user.content) <= 25:
-                    async with ctx.channel.typing():
-                        await ctx.send(f"Please don't expect me to answer your questions where the question number is more than 20! {ctx.author.mention}")
-                elif 25 < int(response_by_user.content) <= 90:
-                    async with ctx.channel.typing():
-                        await ctx.send(f"Stop now! {ctx.author.mention}")
-                else:
-                    async with ctx.channel.typing():
-                        await ctx.send(f"Okay! {ctx.author.mention} I give up! Please don't disturb now!")
-                        break
+                    elif int(response_by_user.content) == 0:
+                        async with ctx.channel.typing():
+                            await ctx.send(f"Great! You found a bug!! {ctx.author.mention}")
+                    elif len(self.response_dict.keys()) < int(response_by_user.content) <= 20:
+                        async with ctx.channel.typing():
+                            await ctx.send(f"Sorry, we just have {len(self.response_dict.keys())} questions as FAQ. More will be added. {ctx.author.mention}")
+                    elif 20 < int(response_by_user.content) <= 25:
+                        async with ctx.channel.typing():
+                            await ctx.send(f"Please don't expect me to answer your questions where the question number is more than 20! {ctx.author.mention}")
+                    elif 25 < int(response_by_user.content) <= 90:
+                        async with ctx.channel.typing():
+                            await ctx.send(f"Stop now! {ctx.author.mention}")
+                    else:
+                        async with ctx.channel.typing():
+                            await ctx.send(f"Okay! {ctx.author.mention} I give up! Please don't disturb now!")
+                            break
+                except ValueError:
+                    if not str(response_by_user).startswith('<') and str(response_by_user).endswith('>'):
+                        await ctx.send(f"You sent a wrong message! {ctx.author.mention}")
 
 
 def setup(bot):
