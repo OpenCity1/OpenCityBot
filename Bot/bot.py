@@ -43,6 +43,7 @@ TICKETS_FILE = os.getenv('TICKETS_JSON')
 REACTION_ROLES_FILE = os.getenv('REACTION_ROLES_JSON')
 APPLICATIONS_FILE = os.getenv('APPLICATIONS_JSON')
 TUNNELS_FILE = os.getenv('TUNNELS_JSON')
+ECONOMY_FILE = os.getenv('ECONOMY_JSON')
 CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
 
 
@@ -90,6 +91,7 @@ bot.tickets_json = TICKETS_FILE
 bot.applications_json = APPLICATIONS_FILE
 bot.reaction_roles_json = REACTION_ROLES_FILE
 bot.tunnels_json = TUNNELS_FILE
+bot.economy_json = ECONOMY_FILE
 bot.invite_url = oauth_url
 bot.start_number = 1000000000000000
 bot.init_cogs = init_cogs
