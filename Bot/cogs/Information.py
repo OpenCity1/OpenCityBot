@@ -31,9 +31,17 @@ class MyHelpCommand(commands.HelpCommand):
         embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
         for cogs in mapping.keys():
             if cogs is not None:
-                if len(cogs.get_commands()) != 0:
+                if len(await self.filter_commands(cogs.get_commands())) != 0:
                     embed.add_field(name=cogs.qualified_name, value=", ".join([
-                        f"`{self.context.prefix}{command}`" for command in cogs.get_commands() if not command.hidden or await self.context.bot.is_owner(self.context.author)]), inline=False)
+                        f"`{self.context.prefix}{command}`" for command in await self.filter_commands(cogs.get_commands()) if
+                        not command.hidden or await self.context.bot.is_owner(self.context.author)]),
+                                    inline=False)
+        # for field in embed.fields:
+        #     if not field.value:
+        #         # embed.remove_field()
+        #         print(embed.fields)
+        #         embed.fields.index(field)
+
         await self.context.author.send(embed=embed)
 
     async def send_cog_help(self, cog: commands.Cog):
