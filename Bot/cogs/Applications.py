@@ -92,7 +92,7 @@ class Applications(commands.Cog):
         await ctx.send(embed=embed)
         json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
-    @questions.command(name="add", help="Adds a question to a application")
+    @questions.command(name="add", help="Adds a question to a application", aliases=['+'])
     async def question_add(self, ctx, application_type, question, index: Optional[int] = -1):
         application_data = json.load(open(self.bot.applications_json))
         if str(ctx.guild.id) not in application_data.keys():
@@ -112,7 +112,7 @@ class Applications(commands.Cog):
         await ctx.send(f"Added your question at {index if index != -1 else index_value_if_index_is_minus_one}")
         json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
-    @questions.command(name="remove", help="Removes a question from a application")
+    @questions.command(name="remove", help="Removes a question from a application", aliases=['-'])
     async def question_remove(self, ctx, application_type, question, index: Optional[int] = -1):
         application_data = json.load(open(self.bot.applications_json))
         if str(ctx.guild.id) not in application_data.keys():
@@ -132,7 +132,7 @@ class Applications(commands.Cog):
         await ctx.send(f"Removed your question at {index if index != -1 else index_value_if_index_is_minus_one}")
         json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
-    @applications.command(name='add', help='Adds a application to a server.')
+    @applications.command(name='add', help='Adds a application to a server.', aliases=['+'])
     async def application_add(self, ctx, application_type):
         application_data = json.load(open(self.bot.applications_json))
         if str(ctx.guild.id) not in application_data.keys():
@@ -157,7 +157,7 @@ class Applications(commands.Cog):
         await ctx.send("To add extra questions or remove unnecessary questions, use `!a questions add {question}`")
         json.dump(application_data, open(self.bot.applications_json, "w"), indent='\t')
 
-    @applications.command(name='remove', help="Removes a application from a server.")
+    @applications.command(name='remove', help="Removes a application from a server.", aliases=['-'])
     async def application_remove(self, ctx, application_type):
         application_data = json.load(open(self.bot.applications_json))
         if str(ctx.guild.id) not in application_data.keys():

@@ -78,7 +78,7 @@ class Voice_Text_Linking(commands.Cog):
         with open(self.bot.voice_text_json, "w") as f:
             json.dump(self.voice_text_data, f, indent='\t')
 
-    @voice_text_link.command(name="add", help='Creates a new a voice text link')
+    @voice_text_link.command(name="add", help='Creates a new a voice text link', aliases=['+'])
     async def vtl_add(self, ctx, voice_channel, text_channel):
         voice_channel_1 = discord.utils.get(ctx.guild.voice_channels, name=voice_channel)
         text_channel_1 = discord.utils.get(ctx.guild.text_channels, name=text_channel)
@@ -93,7 +93,7 @@ class Voice_Text_Linking(commands.Cog):
         with open(self.bot.voice_text_json, "w") as f:
             json.dump(self.voice_text_data, f, indent='\t')
 
-    @voice_text_link.command(name="remove", help="Deletes a existing voice text link")
+    @voice_text_link.command(name="remove", help="Deletes a existing voice text link", aliases=['-'])
     async def vtl_remove(self, ctx, voice_channel):
         if str(ctx.guild.id) not in self.voice_text_data.keys():
             self.voice_text_data[str(ctx.guild.id)] = {}

@@ -40,47 +40,47 @@ class Roles(commands.Cog):
     async def role_in(self, ctx: commands.Context):
         pass
 
-    @role_custom.command(name="add", help="Adds a role to a member!")
+    @role_custom.command(name="add", help="Adds a role to a member!", aliases=['+'])
     async def role_custom_add(self, ctx: commands.Context, member: discord.Member, role: discord.Role):
         await member.add_roles(role)
         await ctx.send(f"Role {role.mention} added to {member.mention}")
 
-    @role_custom.command(name="remove", help="Removes a role from a member!")
+    @role_custom.command(name="remove", help="Removes a role from a member!", aliases=['-'])
     async def role_custom_remove(self, ctx: commands.Context, member: discord.Member, role: discord.Role):
         await member.remove_roles(role)
         await ctx.send(f"Role {role.mention} removed from {member.mention}")
 
-    @role_bot.command(name="add", help="Adds a role to all bots!")
+    @role_bot.command(name="add", help="Adds a role to all bots!", aliases=['+'])
     async def role_bot_add(self, ctx: commands.Context, role: discord.Role):
         for member in ctx.guild.members:
             if member.bot:
                 await member.add_roles(role)
 
-    @role_bot.command(name="remove", help="Removes a role from all bots!")
+    @role_bot.command(name="remove", help="Removes a role from all bots!", aliases=['-'])
     async def role_bot_remove(self, ctx: commands.Context, role: discord.Role):
         for member in ctx.guild.members:
             if member.bot:
                 await member.remove_roles(role)
 
-    @role_humans.command(name="add", help="Adds a role to all humans!")
+    @role_humans.command(name="add", help="Adds a role to all humans!", aliases=['+'])
     async def role_humans_add(self, ctx: commands.Context, role: discord.Role):
         for member in ctx.guild.members:
             if not member.bot:
                 await member.add_roles(role)
 
-    @role_humans.command(name="remove", help="Removes a role from all humans!")
+    @role_humans.command(name="remove", help="Removes a role from all humans!", aliases=['-'])
     async def role_humans_remove(self, ctx: commands.Context, role: discord.Role):
         for member in ctx.guild.members:
             if not member.bot:
                 await member.remove_roles(role)
 
-    @role_in.command(name="add", help="Adds a role to members in a role!")
+    @role_in.command(name="add", help="Adds a role to members in a role!", aliases=['+'])
     async def role_in_add(self, ctx: commands.Context, in_role: discord.Role, role: discord.Role):
         for member in ctx.guild.members:
             if in_role in member.roles:
                 await member.add_roles(role)
 
-    @role_in.command(name="remove", help="Removes a role from members in a role")
+    @role_in.command(name="remove", help="Removes a role from members in a role", aliases=['-'])
     async def role_in_remove(self, ctx: commands.Context, in_role: discord.Role, role: discord.Role):
         for member in ctx.guild.members:
             if in_role in member.roles:

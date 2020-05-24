@@ -36,7 +36,7 @@ class Configuration(commands.Cog):
         embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
         await ctx.send(embed=embed)
 
-    @prefix.command(name="set", help="Sets the prefix for a guild!", hidden=True)
+    @prefix.command(name="set", help="Sets the prefix for a guild!", aliases=['='])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def prefix_set(self, ctx: commands.Context, prefix, index: Optional[int] = 0):
         prefix_list = json.load(open(self.bot.prefix_json))
@@ -45,7 +45,7 @@ class Configuration(commands.Cog):
             json.dump(prefix_list, file, indent='\t')
         await ctx.send(f"Set prefix to {prefix}")
 
-    @prefix.command(name="add", help="Adds a prefix for a guild!", hidden=True)
+    @prefix.command(name="add", help="Adds a prefix for a guild!", aliases=['+'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def prefix_add(self, ctx: commands.Context, prefix):
         prefix_list = json.load(open(self.bot.prefix_json))
@@ -54,7 +54,7 @@ class Configuration(commands.Cog):
             json.dump(prefix_list, file, indent='\t')
         await ctx.send(f"Added prefix to {prefix}")
 
-    @prefix.command(name="remove", help="Removes the prefix for a guild with index value!", hidden=True)
+    @prefix.command(name="remove", help="Removes the prefix for a guild with index value!", aliases=['-'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def prefix_remove(self, ctx: commands.Context, prefix):
         prefix_list = json.load(open(self.bot.prefix_json))
@@ -77,7 +77,7 @@ class Configuration(commands.Cog):
         embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
         await ctx.send(embed=embed)
 
-    @plugin.command(name="enable", help="Enables given plugin!")
+    @plugin.command(name="enable", help="Enables given plugin!", aliases=['+'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def plugin_enable(self, ctx: commands.Context, plugin_ext: str):
         guild_data = json.load(open(self.bot.guilds_json))
@@ -106,7 +106,7 @@ class Configuration(commands.Cog):
         with open(self.bot.guilds_json, "w+") as f:
             json.dump(guild_data, f, indent='\t')
 
-    @plugin.command(name="disable", help="Disables given plugin!")
+    @plugin.command(name="disable", help="Disables given plugin!", aliases=['-'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def plugin_disable(self, ctx: commands.Context, plugin_ext: str):
         guild_data = json.load(open(self.bot.guilds_json))
