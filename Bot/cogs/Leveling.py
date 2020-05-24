@@ -241,7 +241,7 @@ class Leveling(commands.Cog):
         else:
             await ctx.send(f"{ctx.author.mention} you have {user_xps}xps!")
 
-    @xps.command(name="view", help="View other persons xps")
+    @xps.command(name="view", help="View other persons xps", aliases=['get'])
     async def xps_view(self, ctx, member: Optional[discord.Member] = None):
         if member is None:
             await ctx.send(f'{ctx.author.mention} Please mention someone!')
@@ -264,7 +264,7 @@ class Leveling(commands.Cog):
                         msg += f"{user.mention} is a Bot.\n"
                 await ctx.send(msg)
 
-    @xps.command(name="set", help="Sets xps for a user", hidden=True)
+    @xps.command(name="set", help="Sets xps for a user", aliases=['='])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def xps_set(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
         if member is None:
@@ -274,7 +274,7 @@ class Leveling(commands.Cog):
         self.set_data()
         await ctx.send(f"Set xps {xps} to {ctx.author.mention if member == None else member.mention}")
 
-    @xps.command(name="add", help="Adds xps to a user!", hidden=True)
+    @xps.command(name="add", help="Adds xps to a user!", aliases=['+'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def xps_add(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
         if member is None:
@@ -284,7 +284,7 @@ class Leveling(commands.Cog):
         self.set_data()
         await ctx.send(f"Added xps {xps} to {ctx.author.mention if member == None else member.mention}")
 
-    @xps.command(name="remove", help="Removes xps from a user!", hidden=True)
+    @xps.command(name="remove", help="Removes xps from a user!", aliases=['-'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def xps_remove(self, ctx: commands.Context, member: Optional[discord.Member] = None, xps=0):
         if member is None:
@@ -302,7 +302,7 @@ class Leveling(commands.Cog):
         else:
             await ctx.send(f"{ctx.author.mention} you are in {make_ordinal(user_level)} level!")
 
-    @level.command(name="view", help="View other persons levels")
+    @level.command(name="view", help="View other persons levels", aliases=['get'])
     async def level_view(self, ctx, member: Optional[discord.Member] = None):
         if member is None:
             await ctx.send(f'{ctx.author.mention} Please mention someone!')
@@ -322,7 +322,7 @@ class Leveling(commands.Cog):
                         msg += f"{user.mention} is a Bot.\n"
                 await ctx.send(msg)
 
-    @level.command(name="set", help="Sets level for a user!", hidden=True)
+    @level.command(name="set", help="Sets level for a user!", aliases=['='])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def level_set(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
         if member is None:
@@ -332,7 +332,7 @@ class Leveling(commands.Cog):
         self.set_data()
         await ctx.send(f"Set level {level} to {ctx.author.mention if member == None else member.mention}")
 
-    @level.command(name="add", help="Adds level to a user!", hidden=True)
+    @level.command(name="add", help="Adds level to a user!", aliases=['+'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def level_add(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
         if member is None:
@@ -342,7 +342,7 @@ class Leveling(commands.Cog):
         self.set_data()
         await ctx.send(f"Added level {level} to {ctx.author.mention if member == None else member.mention}")
 
-    @level.command(name="remove", help="Removes level from a user!", hidden=True)
+    @level.command(name="remove", help="Removes level from a user!", aliases=['-'])
     @commands.check_any(is_guild_owner(), commands.is_owner())
     async def level_remove(self, ctx: commands.Context, member: Optional[discord.Member] = None, level=0):
         if member is None:

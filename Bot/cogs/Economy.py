@@ -37,7 +37,7 @@ class Economy(commands.Cog):
         await ctx.send(f"You have {formatted_money}")
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='add')
+    @money.command(name='add', aliases=['+'])
     @is_guild_owner()
     async def money_add(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
@@ -50,7 +50,7 @@ class Economy(commands.Cog):
         economy_data[str(ctx.guild.id)][str(member.id)]['money'] += amount
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='remove')
+    @money.command(name='remove', aliases=['-'])
     @is_guild_owner()
     async def money_remove(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
@@ -62,7 +62,7 @@ class Economy(commands.Cog):
         economy_data[str(ctx.guild.id)][str(member.id)]['money'] -= amount
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='set')
+    @money.command(name='set', aliases=['='])
     @is_guild_owner()
     async def money_set(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
