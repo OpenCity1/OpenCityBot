@@ -7,45 +7,37 @@ import discord
 from discord.ext import commands
 
 
-# import json
-# import os
-
-
 class Direct_Message_Support(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.welcome_message = (
-            'Hello, welcome to the {} Discord-server! \n \n I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
-                        \n\
-                            1: What is this? or what is the server meant for?\n \
-                            2: Who is the administrator? or owner?\n \
-                            3: When will OpenCity be released?\n \
-                            4: How far are the game has progressed so far?\n \
-                            5: Who made this bot?\n \
-                            6: What is this game?\n \
-                            7: What will be the specifications?\n \
-                            8: What is premium subscription?\n \
-                            9: What is Special Sandbox subscription?\n \
-                            10: What is the use of diamonds?\n \
-                            11: Do you have any price map for subscriptions?\n \
-                            To ask me just type in the number in front of the question!'
+            'Hello, welcome to the {} Discord-server! \n{questions}'
         )
+        self.questions_list = [
+            '1: What is this? or what is the server meant for?',
+            '2: Who is the administrator? or owner?',
+            '3: When will OpenCity be released?',
+            '4: How far are the game has progressed so far?',
+            '5: Who made this bot?',
+            '6: What is this game?',
+            '7: What will be the specifications?',
+            '8: What is premium subscription?',
+            '9: What is Special Sandbox subscription?',
+            '10: What is the use of diamonds?',
+            '11: Do you have any price map for subscriptions?',
+        ]
         self.questions = (
-            'I can answer most of your questions.\n Most of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: \n\
-            \n\
-            1: What is this? or what is the server meant for ?\n\
-            2: Who is the administrator? or owner?\n \
-            3: When will OpenCity be released?\n \
-            4: How far are the game has progressed so far?\n \
-            5: Who made this bot?\n \
-            6: What is this game?\n \
-            7: What will be the specifications?\n \
-            8: What is premium subscription?\n \
-            9: What is Special Sandbox subscription?\n \
-            10: What is the use of diamonds?\n \
-            11: Do you have any price map for subscriptions?\n \
-            To ask me just type in the number in front of the question!'
+            'I can answer most of your questions.\nMost of the question can be answered by reading faq though!! 😀 \nYou can ask me if you want: '
+            '```{}```'
+            'To ask me just type in the number in front of the question!'.format('\n'.join(self.questions_list))
         )
+        self.specification = [
+            'OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu',
+            'CPU: Core i5 or greater',
+            'RAM: 4GB or Above',
+            'GPU: 2GB or Above',
+            'Storage: 12GB'
+        ]
         self.response_dict = {
             1: 'This is the support discord for the OpenCity city building game.',
             2: 'Sairam',
@@ -53,14 +45,7 @@ class Direct_Message_Support(commands.Cog):
             4: 'We have made Main Menu and some icons',
             5: 'NameKhan72, Sairam, Wizard BINAY',
             6: 'The game OpenCity is the city simulation and transport simulation with first person view of your city and drivable road vehicles, trains, ships and aircrafts.',
-            7: 'We are not able to answer, but we can spectate.\
-                ```\
-                OS: Windows 10 1909 or Above 64-Bit, MacOS 10.15 or Above, Linux Debian, Linux Mint or Ubuntu\n\
-                CPU: Core i5 or greater\n\
-                RAM: 4GB or Above\n\
-                GPU: 2GB or Above\n\
-                Storage: 12GB\
-                ```',
+            7: 'We are not able to answer, but we can spectate.```{}```'.format('\n'.join(self.specification)),
             8: 'Premium is a subscription of OpenCity, it contains assets and features which are very difficult for developers to make.',
             9: 'Special Sandbox is also a subscription, which is a superset of built-in sandbox, it is named as "Everything Unlimited", as it makes all the currencies unlimited.',
             10: 'Diamonds are used to get parts of premium subscription.',
@@ -74,7 +59,7 @@ class Direct_Message_Support(commands.Cog):
         enabled = guild_data[str(member.guild.id)]["enabled"]
         if f"Bot.cogs.{self.qualified_name}" in enabled:
             if not member.bot:
-                await member.send(self.welcome_message.format(member.guild.name))
+                await member.send(self.welcome_message.format(member.guild.name, questions=self.questions))
 
     async def cog_check(self, ctx):
         if ctx.channel.type == discord.ChannelType.private:
@@ -83,9 +68,7 @@ class Direct_Message_Support(commands.Cog):
             return True
         guild_data = json.load(open(self.bot.guilds_json))
         enabled = guild_data[str(ctx.guild.id)]["enabled"]
-        if f"Bot.cogs.{self.qualified_name}" in enabled:
-            return True
-        return False
+        return f"Bot.cogs.{self.qualified_name}" in enabled
 
     @commands.command(help="Gives answers for your question about OpenCity!")
     async def support(self, ctx: commands.Context):
@@ -106,7 +89,7 @@ class Direct_Message_Support(commands.Cog):
                 if int(response_by_user.content) in self.response_dict.keys():
                     async with ctx.channel.typing():
                         try:
-                            await ctx.send(f"{self.response_dict[int(response_by_user.content)]} {ctx.author.mention}".strip("\t").strip())
+                            await ctx.send(f"{self.response_dict[int(response_by_user.content)]} {ctx.author.mention}".replace('    ', '').strip())
                         except ValueError:
                             await ctx.send(f"You sent a wrong message! {ctx.author.mention}")
                 elif int(response_by_user.content) == 0:
