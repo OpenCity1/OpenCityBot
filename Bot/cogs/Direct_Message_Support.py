@@ -81,7 +81,7 @@ class Direct_Message_Support(commands.Cog):
             try:
                 response_by_user = await self.bot.wait_for('message', check=check, timeout=60)
             except asyncio.TimeoutError:
-                await ctx.send(f"You took to long to respond {ctx.author.mention}")
+                await ctx.send(f"You took too long to respond {ctx.author.mention}")
                 break
             else:
                 try:

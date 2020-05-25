@@ -4,15 +4,13 @@ import discord
 from discord.ext import commands
 
 
-class Test_Cog(commands.Cog):
+class Logging(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    def cog_check(self, ctx):
         if ctx.channel.type == discord.ChannelType.private:
-            return True
-        if await self.bot.is_owner(ctx.author):
             return True
         guild_data = json.load(open(self.bot.guilds_json))
         enabled = guild_data[str(ctx.guild.id)]["enabled"]
@@ -20,11 +18,10 @@ class Test_Cog(commands.Cog):
             return True
         return False
 
-    @commands.command()
-    @commands.is_owner()
-    async def test(self, ctx):
-        await ctx.send("It worked!")
+    @commands.Cog.listener()
+    async def on_raw_message_delete(self, message):
+        pass
 
 
 def setup(bot):
-    bot.add_cog(Test_Cog(bot))
+    bot.add_cog(Logging(bot))
