@@ -22,6 +22,14 @@ class Logging(commands.Cog):
     async def on_raw_message_delete(self, message):
         pass
 
+    @commands.Cog.listener()
+    async def on_raw_bulk_message_delete(self, message):
+        pass
+
+    @commands.Cog.listener()
+    async def on_raw_message_edit(self, message):
+        pass
+
 
 def setup(bot):
     bot.add_cog(Logging(bot))
