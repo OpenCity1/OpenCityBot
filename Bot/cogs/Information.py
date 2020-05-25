@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import List, Mapping, Optional
+from typing import List, Mapping, Optional, Union
 
 import discord
 from discord.ext import commands
@@ -13,7 +13,9 @@ class MyHelpCommand(commands.HelpCommand):
         super().__init__(**options)
 
     async def send_command_help(self, command: commands.Command):
-        if (not command.hidden) or await self.context.bot.is_owner(self.context.author):
+        # (not command.hidden) or
+        if await self.context.bot.is_owner(self.context.author) or (
+                command in await self.filter_commands(command.root_parent.commands if command.root_parent else command.cog.get_commands())):
             embed = discord.Embed()
             embed.title = f"{self.context.prefix}{command.name}"
             embed.colour = discord.Colour.dark_green()
@@ -23,6 +25,11 @@ class MyHelpCommand(commands.HelpCommand):
             embed.add_field(name="Module", value=f"{str(command.cog.qualified_name)}")
             embed.description = command.help
             await self.context.send(embed=embed)
+        else:
+            if command.parent is None:
+                await self.context.send(self.command_not_found(command.qualified_name))
+            else:
+                await self.context.send(self.subcommand_not_found(command.parent, command.name))
 
     async def send_bot_help(self, mapping: Mapping[Optional[commands.Cog], List[commands.Command]]):
         embed = discord.Embed()
@@ -45,23 +52,27 @@ class MyHelpCommand(commands.HelpCommand):
         await self.context.author.send(embed=embed)
 
     async def send_cog_help(self, cog: commands.Cog):
-        embed = discord.Embed()
-        embed.colour = discord.Colour.dark_gold()
-        embed.title = cog.qualified_name
-        embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
-        for command in cog.get_commands():
-            if command is not None:
-                embed.add_field(name=command.name, value=command.help, inline=False)
-        await self.context.send(embed=embed)
+        if cog.qualified_name != "System":
+            embed = discord.Embed()
+            embed.colour = discord.Colour.dark_gold()
+            embed.title = cog.qualified_name
+            embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
+            for command in cog.get_commands():
+                if command is not None and command in await self.filter_commands(cog.get_commands()):
+                    embed.add_field(name=command.name, value=command.help, inline=False)
+            await self.context.send(embed=embed)
+        else:
+            await self.context.send("There is no cog named System!")
 
-    async def send_group_help(self, group):
+    async def send_group_help(self, group: commands.Group):
         embed = discord.Embed()
         embed.colour = discord.Colour.dark_orange()
         embed.title = group.qualified_name
         embed.description = f"Usage: `{self.get_command_signature(group)}`\nAliases: {' | '.join([f'`{alias}`' for alias in group.aliases]) if group.aliases else f'`{group.name}`'}\nHelp: {group.help}"
         embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
         for command in group.commands:
-            embed.add_field(name=command.name, value=command.help)
+            if command in await self.filter_commands(group.commands):
+                embed.add_field(name=command.name, value=command.help)
         await self.context.send(embed=embed)
 
     def get_command_signature(self, command):
@@ -137,6 +148,8 @@ class Information(commands.Cog):
         offline_members = 0
         idle_members = 0
         dnd_members = 0
+        bots = 0
+        humans = 0
 
         guild: discord.Guild = ctx.guild
         for member in guild.members:
@@ -148,7 +161,21 @@ class Information(commands.Cog):
                 idle_members += 1
             if member.status is discord.Status.dnd:
                 dnd_members += 1
+            if member.bot:
+                bots += 1
+            if not member.bot:
+                humans += 1
 
+        value_char = 0
+        role_mention_str = ""
+        for role_index, role in enumerate(list(reversed(guild.roles))):
+            if role.mention != f"<@&{guild.id}>":
+                if not value_char >= 1000:
+                    value_char += len(role.mention)
+                    role_mention_str += f"{role.mention}"
+                else:
+                    role_mention_str += f" (+{len(guild.roles[role_index:])} Roles)"
+                    break
         embed = discord.Embed()
         embed.set_author(name=guild.name, icon_url=guild.icon_url)
         embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
@@ -159,9 +186,76 @@ class Information(commands.Cog):
         embed.add_field(name="Channels available",
                         value=f"<:channel:713041608379203687> {len(guild.text_channels)} \n<:voice:713041608312094731> {len(guild.voice_channels)}\n <:news:713041608559427624> {len([channel for channel in guild.text_channels if channel.is_news()])}")
         embed.add_field(name="Members count with status",
-                        value=f"<:online:713029272125833337> {online_members}\n <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \n <:dnd:713029270489792533> {dnd_members}")
-        embed.add_field(name="Roles", value="".join(list(reversed([role.mention for role in guild.roles if not role.mention == f'<@&{guild.id}>']))[:20]), inline=False)
+                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(guild.members)}")
+        embed.add_field(name="Roles", value=role_mention_str, inline=False)
         embed.add_field(name="Guild Icon URL", value="This server has no icon url" if not bool(guild.icon_url) else guild.icon_url)
+        embed.add_field(name="Voice Region", value=f":flag_{str(guild.region)[:2]}: {str(guild.region).capitalize()}")
+        embed.add_field(name="Ban Count", value=f"<:ban:714168539975778324> {len(await guild.bans())}")
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def role_info(self, ctx, role: discord.Role):
+        online_members = 0
+        offline_members = 0
+        idle_members = 0
+        dnd_members = 0
+        bots = 0
+        humans = 0
+
+        for member in role.members:
+            if member.status is discord.Status.online:
+                online_members += 1
+            if member.status is discord.Status.offline:
+                offline_members += 1
+            if member.status is discord.Status.idle:
+                idle_members += 1
+            if member.status is discord.Status.dnd:
+                dnd_members += 1
+            if member.bot:
+                bots += 1
+            if not member.bot:
+                humans += 1
+
+        embed = discord.Embed()
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.title = f"Info of {role.name}"
+        embed.add_field(name="Name", value=role.name)
+        embed.add_field(name="ID", value=role.id)
+        embed.add_field(name="Created at", value=convert_utc_into_ist(role.created_at)[1], inline=False)
+        embed.add_field(name="Hoisted",
+                        value=role.hoist)
+        embed.add_field(name="Mentionable",
+                        value=role.mentionable)
+        embed.add_field(name="Members count with status",
+                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(role.members)}")
+        embed.add_field(name="Colour", value=f"{role.colour}", inline=False)
+        embed.add_field(name="Mention", value=role.mention)
+        embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.roles[:-1])).index(role) + 1)}")
+        embed.add_field(name="Position (from bottom)", value=f"{((ctx.guild.roles[1:]).index(role) + 1)}")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def channel_info(self, ctx, channel: Union[discord.TextChannel, discord.VoiceChannel]):
+
+        type_1 = "<:channel:713041608379203687> Text" if channel.type == discord.ChannelType.text else "<:voice:713041608312094731> Voice" if channel.type == discord.ChannelType.voice else "<:news:713041608559427624> News" if channel.type == discord.ChannelType.news else "<> Store"
+        embed = discord.Embed()
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.title = f"Info of {channel.name}"
+        embed.add_field(name="Name", value=channel.name)
+        embed.add_field(name="ID", value=channel.id)
+        embed.add_field(name="Created at", value=convert_utc_into_ist(channel.created_at)[1], inline=False)
+        if channel.type == discord.ChannelType.text:
+            embed.add_field(name="NSFW", value=channel.nsfw)
+        embed.add_field(name="Type",
+                        value=type_1)
+        # embed.add_field(name="Members count with status",
+        #                 value=f"<:online:713029272125833337> {online_members}\n <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \n <:dnd:713029270489792533> {dnd_members}")
+        embed.add_field(name="Parent", value=f"{channel.category}", inline=False)
+        embed.add_field(name="Mention", value=channel.mention)
+        embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.channels)).index(channel) + 1)}")
+        embed.add_field(name="Position (from bottom)", value=f"{(ctx.guild.channels.index(channel) + 1)}")
         await ctx.send(embed=embed)
 
     @commands.command()

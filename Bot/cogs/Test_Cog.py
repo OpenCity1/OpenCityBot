@@ -21,6 +21,7 @@ class Test_Cog(commands.Cog):
         return False
 
     @commands.command()
+    @commands.is_owner()
     async def test(self, ctx):
         await ctx.send("It worked!")
 
