@@ -197,7 +197,7 @@ class Information(commands.Cog):
         embed.add_field(name="Ban Count", value=f"<:ban:714168539975778324> {len(await guild.bans())}")
         await ctx.send(embed=embed)
 
-    @commands.command(help="Gives the info of a role.", name="role")
+    @info.command(help="Gives the info of a role.", name="role")
     async def info_role(self, ctx, role: discord.Role):
         online_members = 0
         offline_members = 0
@@ -239,7 +239,7 @@ class Information(commands.Cog):
         embed.add_field(name="Position (from bottom)", value=f"{((ctx.guild.roles[1:]).index(role) + 1)}")
         await ctx.send(embed=embed)
 
-    @commands.command(help="Gives the info of a channel.", name="channel")
+    @info.command(help="Gives the info of a channel.", name="channel")
     async def info_channel(self, ctx, channel: Union[discord.TextChannel, discord.VoiceChannel]):
 
         type_1 = "<:channel:713041608379203687> Text" if channel.type == discord.ChannelType.text else "<:voice:713041608312094731> Voice" if channel.type == discord.ChannelType.voice else "<:news:713041608559427624> News" if channel.type == discord.ChannelType.news else "<> Store"
