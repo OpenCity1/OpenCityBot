@@ -356,7 +356,7 @@ class Leveling(commands.Cog):
         leader_board1 = {str(guild_id): dict(sorted(self.leveling_data[str(guild_id)].items(), key=lambda items: items[1][how_to_sort], reverse=True))}
         return list(leader_board1[str(guild_id)].items())
 
-    @commands.command(name="leaderboard", aliases=['lb'])
+    @commands.command(name="leaderboard", aliases=['lb'], help="Returns leaderboard.")
     async def leader_board(self, ctx):
         leaderboard = self.get_leader_board(ctx.guild.id, 'level')
         msg = ''

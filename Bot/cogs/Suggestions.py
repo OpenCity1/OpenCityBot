@@ -59,6 +59,8 @@ class Suggestions(commands.Cog):
             "suggestionContent": suggestion,
             "suggestionAuthor": f"{ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id})",
             "suggestionTime": indian_standard_time_now()[1],
+            "suggestionChannelID": message_sent.channel.id,
+            "suggestionGuildID": message_sent.guild.id,
             "suggestionType": f"{type1}",
             "suggestionStatus": "waiting"
         }

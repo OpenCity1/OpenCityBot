@@ -13,8 +13,7 @@ class MyHelpCommand(commands.HelpCommand):
         super().__init__(**options)
 
     async def send_command_help(self, command: commands.Command):
-        # (not command.hidden) or
-        if await self.context.bot.is_owner(self.context.author) or (
+        if (not command.hidden) or await self.context.bot.is_owner(self.context.author) or (
                 command in await self.filter_commands(command.root_parent.commands if command.root_parent else command.cog.get_commands())):
             embed = discord.Embed()
             embed.title = f"{self.context.prefix}{command.name}"
@@ -125,7 +124,7 @@ class Information(commands.Cog):
         days, hours = divmod(hours, 24)
         await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
 
-    @commands.group()
+    @commands.group(help="Gives you info of the thing you want. Emoji info will be added soon.")
     async def info(self, ctx):
         pass
 
@@ -254,15 +253,13 @@ class Information(commands.Cog):
             embed.add_field(name="NSFW", value=channel.nsfw)
         embed.add_field(name="Type",
                         value=type_1)
-        # embed.add_field(name="Members count with status",
-        #                 value=f"<:online:713029272125833337> {online_members}\n <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \n <:dnd:713029270489792533> {dnd_members}")
         embed.add_field(name="Parent", value=f"{channel.category}", inline=False)
         embed.add_field(name="Mention", value=channel.mention)
         embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.channels)).index(channel) + 1)}")
         embed.add_field(name="Position (from bottom)", value=f"{(ctx.guild.channels.index(channel) + 1)}")
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def create_guild(self, ctx, guild_name):
         guild = await self.bot.create_guild(name=guild_name)
         text_channel = discord.utils.get(guild.text_channels, name="general")

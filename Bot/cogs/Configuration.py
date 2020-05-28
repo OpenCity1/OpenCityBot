@@ -95,12 +95,12 @@ class Configuration(commands.Cog):
             await ctx.send("Plugin enabled successfully")
             try:
                 if enabled:
-                    enabled.remove("")
+                    enabled.remove("None")
             except ValueError:
                 pass
             try:
                 if not disabled:
-                    disabled.append("")
+                    disabled.append("None")
             except ValueError:
                 pass
         with open(self.bot.guilds_json, "w+") as f:
@@ -125,12 +125,12 @@ class Configuration(commands.Cog):
             await ctx.send("Plugin disabled successfully")
             try:
                 if disabled:
-                    disabled.remove("")
+                    disabled.remove("None")
             except ValueError:
                 pass
             try:
                 if not enabled:
-                    enabled.append("")
+                    enabled.append("None")
             except ValueError:
                 pass
         with open(self.bot.guilds_json, "w+") as f:
