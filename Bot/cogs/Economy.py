@@ -21,7 +21,7 @@ class Economy(commands.Cog):
         except AttributeError:
             return await self.bot.is_owner(ctx.author)
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, help="Returns your balance.")
     async def money(self, ctx):
         formatted_money = ''
         economy_data = json.load(open(self.bot.economy_json, encoding='utf-8'))
@@ -37,7 +37,7 @@ class Economy(commands.Cog):
         await ctx.send(f"You have {formatted_money}")
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='add', aliases=['+'])
+    @money.command(name='add', aliases=['+'], help="Adds money to the mentioned user with the amount you said.")
     @is_guild_owner()
     async def money_add(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
@@ -50,7 +50,7 @@ class Economy(commands.Cog):
         economy_data[str(ctx.guild.id)][str(member.id)]['money'] += amount
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='remove', aliases=['-'])
+    @money.command(name='remove', aliases=['-'], help="Removes money from the mentioned user with the amount you said.")
     @is_guild_owner()
     async def money_remove(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
@@ -62,7 +62,7 @@ class Economy(commands.Cog):
         economy_data[str(ctx.guild.id)][str(member.id)]['money'] -= amount
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @money.command(name='set', aliases=['='])
+    @money.command(name='set', aliases=['='], help="Sets money for the mentioned user with the amount you said.")
     @is_guild_owner()
     async def money_set(self, ctx, member: Optional[discord.Member] = None, amount: int = 0):
         member = ctx.author if member is None else member
@@ -75,7 +75,7 @@ class Economy(commands.Cog):
         economy_data[str(ctx.guild.id)][str(member.id)]['money'] = amount
         json.dump(economy_data, open(self.bot.economy_json, 'w', encoding='utf-8'), indent='\t')
 
-    @commands.command(name='set_currency')
+    @commands.command(name='set_currency', help="Sets the currency symbol of the bank.")
     async def currency_set(self, ctx, symbol: Optional[str] = None, pos: Optional[str] = None):
         economy_data = json.load(open(self.bot.economy_json, encoding='utf-8'))
         if str(ctx.guild.id) not in economy_data.keys():

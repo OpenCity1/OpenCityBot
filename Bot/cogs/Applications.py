@@ -31,7 +31,7 @@ class Applications(commands.Cog):
         embed.title = "Available applications for this server!"
         msg = ''
         for index, key in enumerate(application_data[str(ctx.guild.id)].keys(), start=1):
-            msg += f"{index}. {key}"
+            msg += f"{index}. {key}\n"
         embed.description = msg
         embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
         await ctx.send(embed=embed)
@@ -86,7 +86,7 @@ class Applications(commands.Cog):
         embed.title = "Available questions for this application on this server!"
         msg = ''
         for index, key in enumerate(application_data[str(ctx.guild.id)][application_type], start=1):
-            msg += f"{index}. {key}"
+            msg += f"{index}. {key}\n"
         embed.description = msg
         embed.set_author(name=ctx.me.name, icon_url=ctx.me.avatar_url)
         await ctx.send(embed=embed)

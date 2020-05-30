@@ -2,6 +2,7 @@ __author__ = "Sairam"
 
 import json
 import random
+import re
 from typing import Optional
 
 import discord
@@ -66,16 +67,24 @@ class Fun(commands.Cog):
             f'Answer: {random.choice(replies)}'
         )
 
-    @commands.command(help="Says what you send!")
-    async def say(self, ctx: commands.context.Context, channel: Optional[discord.TextChannel] = None, *, message=None):
-        if message is not None:
-            if channel is None:
-                await ctx.send(message)
+    @commands.command(aliases=['announce'], usage='[content]')
+    async def say(self, ctx, channel: Optional[discord.TextChannel] = None, *, message: str = None):
+        """Say a message"""
+        channel = ctx.channel if channel is None else channel
+        emojis = re.findall(r':(.*?):', str(message))
+        new_msg = str(message)
+        for a in emojis:
+            rep = f":{a}:"
+            emoji = discord.utils.get(ctx.guild.emojis, name=a)
+            if emoji is not None:
+                if emoji.animated:
+                    new_msg = (new_msg.replace(rep, f"<a:\_:{emoji.id}>"))
+                else:
+                    new_msg = (new_msg.replace(rep, f"<:\_:{emoji.id}>"))
             else:
-                await channel.send(message)
-                await ctx.send("Message sent")
-        else:
-            await ctx.send(f"Message is not filled. Please send the message to be sent. {ctx.author.mention}")
+                continue
+        await channel.send(new_msg)
+        await ctx.message.delete()
 
     # @say.error
     # async def error_say(self, ctx, error):

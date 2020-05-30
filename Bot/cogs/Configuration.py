@@ -46,7 +46,8 @@ class Configuration(commands.Cog):
         await ctx.send(f"Set prefix to {prefix}")
 
     @prefix.command(name="add", help="Adds a prefix for a guild!", aliases=['+'])
-    @commands.check_any(is_guild_owner(), commands.is_owner())
+    # @commands.check_any(is_guild_owner(), commands.is_owner())
+    @commands.has_guild_permissions(manage_guild=True)
     async def prefix_add(self, ctx: commands.Context, prefix):
         prefix_list = json.load(open(self.bot.prefix_json))
         prefix_list[str(ctx.guild.id)]["prefix"].append(prefix)
@@ -55,7 +56,8 @@ class Configuration(commands.Cog):
         await ctx.send(f"Added prefix to {prefix}")
 
     @prefix.command(name="remove", help="Removes the prefix for a guild with index value!", aliases=['-'])
-    @commands.check_any(is_guild_owner(), commands.is_owner())
+    # @commands.check_any(is_guild_owner(), commands.is_owner())
+    @commands.has_guild_permissions(manage_guild=True)
     async def prefix_remove(self, ctx: commands.Context, prefix):
         prefix_list = json.load(open(self.bot.prefix_json))
         prefix_list[str(ctx.guild.id)]["prefix"].remove(prefix)
@@ -78,7 +80,8 @@ class Configuration(commands.Cog):
         await ctx.send(embed=embed)
 
     @plugin.command(name="enable", help="Enables given plugin!", aliases=['+'])
-    @commands.check_any(is_guild_owner(), commands.is_owner())
+    # @commands.check_any(is_guild_owner(), commands.is_owner())
+    @commands.has_guild_permissions(manage_guild=True)
     async def plugin_enable(self, ctx: commands.Context, plugin_ext: str):
         guild_data = json.load(open(self.bot.guilds_json))
         enabled = guild_data[str(ctx.guild.id)]["enabled"]
@@ -95,19 +98,20 @@ class Configuration(commands.Cog):
             await ctx.send("Plugin enabled successfully")
             try:
                 if enabled:
-                    enabled.remove("")
+                    enabled.remove("None")
             except ValueError:
                 pass
             try:
                 if not disabled:
-                    disabled.append("")
+                    disabled.append("None")
             except ValueError:
                 pass
         with open(self.bot.guilds_json, "w+") as f:
             json.dump(guild_data, f, indent='\t')
 
     @plugin.command(name="disable", help="Disables given plugin!", aliases=['-'])
-    @commands.check_any(is_guild_owner(), commands.is_owner())
+    # @commands.check_any(is_guild_owner(), commands.is_owner())
+    @commands.has_guild_permissions(manage_guild=True)
     async def plugin_disable(self, ctx: commands.Context, plugin_ext: str):
         guild_data = json.load(open(self.bot.guilds_json))
         enabled = guild_data[str(ctx.guild.id)]["enabled"]
@@ -125,12 +129,12 @@ class Configuration(commands.Cog):
             await ctx.send("Plugin disabled successfully")
             try:
                 if disabled:
-                    disabled.remove("")
+                    disabled.remove("None")
             except ValueError:
                 pass
             try:
                 if not enabled:
-                    enabled.append("")
+                    enabled.append("None")
             except ValueError:
                 pass
         with open(self.bot.guilds_json, "w+") as f:
