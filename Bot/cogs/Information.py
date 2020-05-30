@@ -33,7 +33,7 @@ class MyHelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping: Mapping[Optional[commands.Cog], List[commands.Command]]):
         embed = discord.Embed()
         embed.colour = discord.Colour.dark_blue()
-        embed.title = f"Need some help, right? Get it here!"
+        embed.title = f"Need some help, right? Get it here! " + str(len(self.context.bot.commands))
         embed.set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar_url)
         for cogs in mapping.keys():
             if cogs is not None:
@@ -124,11 +124,11 @@ class Information(commands.Cog):
         days, hours = divmod(hours, 24)
         await ctx.send(f"Uptime: {days}d, {hours}h, {minutes}m, {seconds}s")
 
-    @commands.group(help="Gives you info of the thing you want. Emoji info will be added soon.")
+    @commands.group(help="Gives you info of the thing you want. Emoji info will be added soon.", aliases=['i'])
     async def info(self, ctx):
         pass
 
-    @info.command(help="Gives the info of a user.", name="user")
+    @info.command(help="Gives the info of a user.", name="user", aliases=['u'])
     async def info_user(self, ctx: commands.Context, member: discord.Member = None):
         member = ctx.author if member is None else member
 
@@ -141,11 +141,12 @@ class Information(commands.Cog):
         embed.add_field(name="Created at", value=convert_utc_into_ist(member.created_at)[1])
         embed.add_field(name="Joined at", value=convert_utc_into_ist(member.joined_at)[1])
         embed.add_field(name="Roles", value="".join(list(reversed([role.mention for role in member.roles if not role.mention == f'<@&{member.guild.id}>']))), inline=False)
-        embed.add_field(name="Avatar URL", value=member.avatar_url)
+        embed.add_field(name="Avatar URL", value=f"[Avatar URL]({member.avatar_url})")
+        embed.set_thumbnail(url=member.avatar_url)
 
         await ctx.send(embed=embed)
 
-    @info.command(help="Gives the info of a guild.", name="guild")
+    @info.command(help="Gives the info of a guild.", name="guild", aliases=['g', 's', 'server'])
     async def info_guild(self, ctx: commands.Context):
         online_members = 0
         offline_members = 0
@@ -191,12 +192,13 @@ class Information(commands.Cog):
         embed.add_field(name="Members count with status",
                         value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(guild.members)}")
         embed.add_field(name="Roles", value=role_mention_str, inline=False)
-        embed.add_field(name="Guild Icon URL", value="This server has no icon url" if not bool(guild.icon_url) else guild.icon_url)
+        embed.add_field(name="Guild Icon URL", value="This server has no icon url" if not bool(guild.icon_url) else f"[Guild Icon URL]({guild.icon_url})")
         embed.add_field(name="Voice Region", value=f":flag_{str(guild.region)[:2]}: {str(guild.region).capitalize()}")
         embed.add_field(name="Ban Count", value=f"<:ban:714168539975778324> {len(await guild.bans())}")
+        embed.set_thumbnail(url=guild.icon_url)
         await ctx.send(embed=embed)
 
-    @info.command(help="Gives the info of a role.", name="role")
+    @info.command(help="Gives the info of a role.", name="role", aliases=['r'])
     async def info_role(self, ctx, role: discord.Role):
         online_members = 0
         offline_members = 0
@@ -234,12 +236,13 @@ class Information(commands.Cog):
                         value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(role.members)}")
         embed.add_field(name="Colour", value=f"{role.colour}", inline=False)
         embed.add_field(name="Mention", value=role.mention)
-        embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.roles[:-1])).index(role) + 1)}")
+        embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.roles[1:])).index(role) + 1)}")
         embed.add_field(name="Position (from bottom)", value=f"{((ctx.guild.roles[1:]).index(role) + 1)}")
         await ctx.send(embed=embed)
 
-    @info.command(help="Gives the info of a channel.", name="channel")
-    async def info_channel(self, ctx, channel: Union[discord.TextChannel, discord.VoiceChannel]):
+    @info.command(help="Gives the info of a channel.", name="channel", aliases=['c'])
+    async def info_channel(self, ctx, channel: Optional[Union[discord.TextChannel, discord.VoiceChannel]]):
+        channel = ctx.channel if channel is None else channel
 
         type_1 = "<:channel:713041608379203687> Text" if channel.type == discord.ChannelType.text else "<:voice:713041608312094731> Voice" if channel.type == discord.ChannelType.voice else "<:news:713041608559427624> News" if channel.type == discord.ChannelType.news else "<> Store"
         embed = discord.Embed()

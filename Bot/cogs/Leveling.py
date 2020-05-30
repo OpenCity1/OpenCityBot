@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 import time
@@ -204,6 +205,7 @@ class Leveling(commands.Cog):
         for i, list_of_discord_color, list_of_discord_perms_1 in zip(self.leveling_roles, list_of_discord_colors, list_of_discord_perms):
             for (j, k), color_1, perms_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color, list_of_discord_perms_1):
                 if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) not in ctx.guild.roles:
+                    await asyncio.sleep(5)
                     await ctx.guild.create_role(name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True, permissions=perms_1)
         await ctx.send("Created All levelling roles")
 
@@ -217,6 +219,7 @@ class Leveling(commands.Cog):
         for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
             for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
                 if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
+                    await asyncio.sleep(5)
                     await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0], color=color_1, hoist=True, mentionable=True).delete()
         await ctx.send("Deleted All levelling roles")
 
@@ -230,6 +233,7 @@ class Leveling(commands.Cog):
         for i, list_of_discord_color in zip(self.leveling_roles, list_of_discord_colors):
             for (j, k), color_1 in zip(enumerate(self.leveling_prefix), list_of_discord_color):
                 if discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]) in ctx.guild.roles:
+                    await asyncio.sleep(5)
                     await discord.utils.get(ctx.guild.roles, name=leveling_prefix_1[j] + self.leveling_roles[i][0]).delete()
         await ctx.send("Deleted All levelling roles")
 

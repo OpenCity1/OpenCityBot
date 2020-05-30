@@ -156,9 +156,11 @@ for filename in os.listdir('Bot/cogs'):
 @tasks.loop(hours=1)
 async def my_presence_per_day():
     await bot.wait_until_ready()
-    statuses = cycle([discord.Status.invisible, discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.idle, discord.Status.dnd])
+    statuses = cycle([discord.Status.do_not_disturb, discord.Status.online, discord.Status.offline, discord.Status.idle, discord.Status.dnd])
     activities = cycle([discord.Game(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"),
-                        discord.Streaming(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started", url="https://www.twitch.tv/opencitybotdiscord")])
+                        discord.Streaming(name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started", url="https://www.twitch.tv/opencitybotdiscord"),
+                        discord.Activity(type=discord.ActivityType.listening, name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started"),
+                        discord.Activity(type=discord.ActivityType.watching, name=f"OpenCity • Type {random.choice(bot.prefix_default)}help to get started")])
     status = next(statuses)
     activity = next(activities)
     await bot.change_presence(status=status, activity=activity)

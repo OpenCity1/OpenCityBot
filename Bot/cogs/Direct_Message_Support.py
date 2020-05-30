@@ -43,7 +43,7 @@ class Direct_Message_Support(commands.Cog):
             2: 'Sairam',
             3: "We don't have any ETA for now, we'll let you know",
             4: 'We have made Main Menu and some icons',
-            5: 'NameKhan72, Sairam, Wizard BINAY',
+            5: 'NameKhan72, Sairam, Wizard BINAY, SQWiperYT',
             6: 'The game OpenCity is the city simulation and transport simulation with first person view of your city and drivable road vehicles, trains, ships and aircrafts.',
             7: 'We are not able to answer, but we can spectate.```{}```'.format('\n'.join(self.specification)),
             8: 'Premium is a subscription of OpenCity, it contains assets and features which are very difficult for developers to make.',
