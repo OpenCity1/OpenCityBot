@@ -74,8 +74,8 @@ class MyHelpCommand(commands.HelpCommand):
                 embed.add_field(name=command.name, value=command.help)
         await self.context.send(embed=embed)
 
-    def get_command_signature(self, command):
-        return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
+    # def get_command_signature(self, command):
+    #     return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
 
 
 class Information(commands.Cog):
@@ -155,6 +155,11 @@ class Information(commands.Cog):
         bots = 0
         humans = 0
 
+        store_channels = 0
+        news_channels = 0
+        nsfw_channels = 0
+        category_channels = 0
+
         guild: discord.Guild = ctx.guild
         for member in guild.members:
             if member.status is discord.Status.online:
@@ -169,6 +174,16 @@ class Information(commands.Cog):
                 bots += 1
             if not member.bot:
                 humans += 1
+        for channel in guild.channels:
+            if isinstance(channel, discord.StoreChannel):
+                store_channels += 1
+            if isinstance(channel, discord.TextChannel):
+                if channel.is_news():
+                    news_channels += 1
+                if channel.is_nsfw():
+                    nsfw_channels += 1
+            if isinstance(channel, discord.CategoryChannel):
+                category_channels += 1
 
         value_char = 0
         role_mention_str = ""
@@ -188,9 +203,9 @@ class Information(commands.Cog):
         embed.add_field(name="ID", value=guild.id)
         embed.add_field(name="Created at", value=convert_utc_into_ist(guild.created_at)[1], inline=False)
         embed.add_field(name="Channels available",
-                        value=f"<:channel:713041608379203687> {len(guild.text_channels)} \n<:voice:713041608312094731> {len(guild.voice_channels)}\n <:news:713041608559427624> {len([channel for channel in guild.text_channels if channel.is_news()])}")
+                        value=f"<:channel:713041608379203687> {len(guild.text_channels)} \t <:voice:713041608312094731> {len(guild.voice_channels)}\n <:news:713041608559427624> {news_channels} \t <:store_tag1:716660817487200338> {store_channels} \n <:nsfw:716664108392644708> {nsfw_channels} \t <:category1:714347844307517514> {category_channels} \n \n Total: {len(guild.channels)}")
         embed.add_field(name="Members count with status",
-                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(guild.members)}")
+                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n \n :robot: {bots} \t <:members:716546232570347560> {humans} \n \n Total: {len(guild.members)}")
         embed.add_field(name="Roles", value=role_mention_str, inline=False)
         embed.add_field(name="Guild Icon URL", value="This server has no icon url" if not bool(guild.icon_url) else f"[Guild Icon URL]({guild.icon_url})")
         embed.add_field(name="Voice Region", value=f":flag_{str(guild.region)[:2]}: {str(guild.region).capitalize()}")
@@ -233,7 +248,7 @@ class Information(commands.Cog):
         embed.add_field(name="Mentionable",
                         value=role.mentionable)
         embed.add_field(name="Members count with status",
-                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n :robot: {bots} \t :smiley: {humans} \n Total: {len(role.members)}")
+                        value=f"<:online:713029272125833337> {online_members} \t <:invisible:713029271391830109> {offline_members} \n <:idle:713029270976331797> {idle_members} \t <:dnd:713029270489792533> {dnd_members} \n \n :robot: {bots} \t <:members:716546232570347560> {humans} \n \n Total: {len(role.members)}")
         embed.add_field(name="Colour", value=f"{role.colour}", inline=False)
         embed.add_field(name="Mention", value=role.mention)
         embed.add_field(name="Position (from top)", value=f"{(list(reversed(ctx.guild.roles[1:])).index(role) + 1)}")
